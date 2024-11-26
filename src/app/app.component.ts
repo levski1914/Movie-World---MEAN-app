@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from './services/auth.service';
 
-import { FontAwesomeModule } from '@forta';
 @Component({
   selector: 'app-root',
   standalone: true,
