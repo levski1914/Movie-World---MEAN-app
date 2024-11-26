@@ -1,0 +1,71 @@
+.filters {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filters input,
+.filters select {
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.filters input:focus,
+.filters select:focus {
+  border-color: #ff4d6d;
+  box-shadow: 0 0 5px rgba(255, 77, 109, 0.5);
+}
+
+.movie-card {
+  background-color: #1a1a2e;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  margin: 10px;
+  text-align: center;
+  width: 300px;
+}
+
+.movie-card img {
+  width: 250px;
+  height: 300px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.movie-card h3 {
+  font-size: 1.2rem;
+  color: #ff4d6d;
+}
+
+.movie-card button {
+  padding: 10px 15px;
+  border: none;
+  background-color: #ff4d6d;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.movie-card button:hover {
+  background-color: #ff6d85;
+}
+.movie-list {
+  padding: 20px;
+}
+
+.movie-list h2 {
+  color: #ff4d6d;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.movies-grid {
+  display: flex;
+  flex-grow: 1;
+}

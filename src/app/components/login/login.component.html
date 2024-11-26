@@ -1,0 +1,29 @@
+<div class="login-container">
+  <h2 class="text-center">Вход</h2>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="email">Имейл</label>
+      <input
+        type="email"
+        formControlName="email"
+        id="email"
+        class="form-control"
+        placeholder="Въведете имейл"
+      />
+    </div>
+    <div class="form-group mt-3">
+      <label for="password">Парола</label>
+      <input
+        type="password"
+        formControlName="password"
+        id="password"
+        class="form-control"
+        placeholder="Въведете парола"
+      />
+    </div>
+    <button type="submit" class="btn btn-primary btn-block mt-4">Вход</button>
+    <p class="text-center mt-3">
+      Нямате акаунт? <a routerLink="/register">Регистрация</a>
+    </p>
+  </form>
+</div>

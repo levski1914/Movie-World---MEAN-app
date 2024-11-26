@@ -1,0 +1,20 @@
+<div class="movie-form">
+  <h2>Create New Movie</h2>
+  <form [formGroup]="movieForm" (ngSubmit)="onSubmit()">
+    <label>Title:</label>
+    <input formControlName="title" />
+
+    <label>Description:</label>
+    <textarea formControlName="desc"></textarea>
+
+    <label>Genre:</label>
+    <input formControlName="genre" />
+
+    <label>Release Date:</label>
+    <input type="date" formControlName="releaseDate" />
+    <label>Image Url:</label>
+    <input type="url" formControlName="image" />
+
+    <button type="submit" [disabled]="!movieForm.valid">Create Movie</button>
+  </form>
+</div>
