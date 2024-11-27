@@ -1,20 +1,33 @@
 <div class="movie-form">
   <h2>Create New Movie</h2>
   <form [formGroup]="movieForm" (ngSubmit)="onSubmit()">
-    <label>Title:</label>
-    <input formControlName="title" />
+    <div class="form-group">
+      <label>Title:</label>
+      <input class="form-control" formControlName="title" />
+    </div>
 
-    <label>Description:</label>
-    <textarea formControlName="desc"></textarea>
+    <div class="form-group">
+      <label>Description:</label>
+      <textarea class="form-control" formControlName="desc"></textarea>
+    </div>
 
-    <label>Genre:</label>
-    <input formControlName="genre" />
+    <div class="form-group">
+      <label>Genre:</label>
+      <input class="form-control" formControlName="genre" />
+    </div>
 
-    <label>Release Date:</label>
-    <input type="date" formControlName="releaseDate" />
-    <label>Image Url:</label>
-    <input type="url" formControlName="image" />
+    <div class="form-group">
+      <label>Release Date:</label>
+      <input class="form-control" type="date" formControlName="releaseDate" />
+    </div>
 
-    <button type="submit" [disabled]="!movieForm.valid">Create Movie</button>
+    <div class="form-group">
+      <label>Image Url:</label>
+      <input class="form-control" type="url" formControlName="image" />
+    </div>
+
+    <button class="btn btn-primary" type="submit" [disabled]="!movieForm.valid">
+      Create Movie
+    </button>
   </form>
 </div>

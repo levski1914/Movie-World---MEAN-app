@@ -69,7 +69,6 @@ export class AuthService {
     }
   }
 
-  // Запазване на потребителско име
   saveUsername(username: string): void {
     if (this.isLocalStorageAvailable()) {
       localStorage.setItem('username', username);
@@ -77,7 +76,6 @@ export class AuthService {
     }
   }
 
-  // Премахване на данни при логоут
   logout(): void {
     if (this.isLocalStorageAvailable()) {
       localStorage.removeItem('authToken');
@@ -92,13 +90,19 @@ export class AuthService {
     }
     return !!localStorage.getItem('authToken');
   }
-  // Извличане на потребителско име
+
   getUsername(): string | null {
     return localStorage.getItem('username');
   }
 
-  // Извличане на токен
   getToken(): string | null {
     return localStorage.getItem('authToken');
+  }
+
+  getUserProfile(): Observable<any> {
+    const token = localStorage.getItem('authToken');
+    return this.http.get(`${this.apiURL}/profile`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
   }
 }

@@ -30,7 +30,7 @@ export class MovieListComponent implements OnInit {
       (data) => {
         this.movies = data;
         this.filteredMovies = [...this.movies];
-        this.genre = [...new Set(this.movies.map((movie) => movie.genre))]; // Уникални жанрове
+        this.genre = [...new Set(this.movies.map((movie) => movie.genre))];
       },
       (error) => {
         console.error('Error loading movies:', error);
