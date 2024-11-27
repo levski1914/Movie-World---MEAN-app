@@ -1,0 +1,17 @@
+/* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+  position: relative;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background: linear-gradient(180deg, #1a1a2e, #16213e) !important;
+  background-repeat: no-repeat !important;
+  background-size: cover;
+  height: 100vh; /* Това ще направи височината на body винаги равна на височината на прозореца */
+  min-height: 100%; /* Уверява се, че body ще запълва поне целия прозорец */
+  overflow-x: hidden; /* За да избегнеш нежелани хоризонтални скролове */
+  color: #ffffff; /* Задава стандартен цвят за текста */
+}
+
+// #007BFF

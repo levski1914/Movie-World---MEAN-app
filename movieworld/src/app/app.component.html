@@ -1,0 +1,29 @@
+<div class="header">
+  <h1 style="color: #e94560">Movie World</h1>
+  <nav>
+    <a routerLink="/home">Home</a>
+    <a routerLink="/movie-list">Movies</a>
+    <a routerLink="/series">Series</a>
+    <a routerLink="/originals">Originals</a>
+  </nav>
+  <div class="account">
+    <ng-container *ngIf="isLoggedIn; else loggedOut">
+      <div class="user-info">
+        <img src="#" alt="profile" />
+        <p>{{ username }}</p>
+        <p (click)="onToggle()">&#8964;</p>
+      </div>
+
+      <div [ngClass]="toggleStyle ? 'show' : 'hide'" class="menu">
+        <a routerLink="/profile">Профил</a>
+        <a routerLink="/create">Добавяне на филм/сериал</a>
+        <a (click)="logOut()">Логоут</a>
+      </div>
+    </ng-container>
+
+    <ng-template #loggedOut>
+      <a routerLink="/login">Login</a> / <a routerLink="/register">Register</a>
+    </ng-template>
+  </div>
+</div>
+<router-outlet></router-outlet>

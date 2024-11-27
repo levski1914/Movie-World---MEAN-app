@@ -1,0 +1,41 @@
+.profile-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.user-profile,
+.created-movies,
+.favourite-movies {
+  background-color: #16213e;
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.user-profile {
+  text-align: center;
+}
+
+.user-avatar {
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  margin-top: 10px;
+}
+
+.created-movies,
+.favourite-movies {
+  width: 48%; /* Половината от ширината */
+}
+
+.movie-card {
+  margin-bottom: 15px;
+  background-color: #1a1a2e;
+  padding: 10px;
+  border-radius: 8px;
+}
