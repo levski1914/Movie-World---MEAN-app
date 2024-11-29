@@ -1,58 +1,101 @@
 .header {
   display: flex;
   justify-content: space-between;
-  max-width: 1500px;
   align-items: center;
-  margin: 0 auto;
-  color: #e94560 !important;
+  background-color: #16213e;
+  padding: 10px 20px;
+  color: white;
 }
 
 .header h1 {
-  font-size: 3rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+  margin: 0;
+  font-size: 24px;
+  color: #e94560;
 }
+
 nav {
-  padding: 1em;
-  background: #010f1d;
-  color: #fff;
-  border-radius: 20px;
+  display: flex;
+  gap: 20px;
 }
+
 nav a {
-  color: #fff;
-  margin-right: 15px;
   text-decoration: none;
+  color: white;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #e94560;
 }
 
 .account {
+  position: relative;
+}
+
+.user-info {
   display: flex;
   align-items: center;
+  gap: 10px;
+  cursor: pointer;
 }
 
-.account img {
-  width: 30px;
-  height: 30px;
+.user-info img {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  margin-right: 10px;
-}
-.menu.show {
-  display: block;
-  visibility: visible;
+  object-fit: cover;
 }
 
-.menu.hide {
+.user-info p {
+  margin: 0;
+  color: white;
+  font-weight: bold;
+}
+
+.menu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: #1a1a2e;
+  border: 1px solid #e94560;
+  border-radius: 8px;
+  padding: 10px;
   display: none;
-  visibility: hidden;
-}
-.menu a {
-  display: block;
-  color: #fff;
-  margin-top: 5px;
-  text-decoration: none;
+  flex-direction: column;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  width: 200px;
 }
 
-/* Стилове за логин/регистър */
-.account a {
-  color: #fff;
-  margin-right: 10px;
+.menu a {
   text-decoration: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.menu a:hover {
+  background-color: #e94560;
+}
+
+.show {
+  display: flex;
+}
+
+.hide {
+  display: none;
+}
+
+.loggedOut a {
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  margin: 0 5px;
+  transition: color 0.3s ease;
+}
+
+.loggedOut a:hover {
+  color: #e94560;
 }

@@ -1,5 +1,8 @@
+<app-snowfall></app-snowfall>
 <div class="header">
-  <h1 style="color: #e94560">Movie World</h1>
+  <a routerLink="/home" class="fs-1" style="text-decoration: none">
+    <h1 style="color: #e94560" class="fs-2">Movie World</h1>
+  </a>
   <nav>
     <a routerLink="/home">Home</a>
     <a routerLink="/movie-list">Movies</a>
@@ -8,10 +11,10 @@
   </nav>
   <div class="account">
     <ng-container *ngIf="isLoggedIn; else loggedOut">
-      <div class="user-info">
+      <div class="user-info align-items-center">
         <img src="#" alt="profile" />
         <p>{{ username }}</p>
-        <p (click)="onToggle()">&#8964;</p>
+        <p (click)="onToggle()" class="fs-3">&#8964;</p>
       </div>
 
       <div [ngClass]="toggleStyle ? 'show' : 'hide'" class="menu">
