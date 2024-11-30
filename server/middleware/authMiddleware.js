@@ -13,7 +13,10 @@ const authMiddleware = (req, res, next) => {
     req.user = verified;
     next();
   } catch (error) {
+    res.clearCookie("Authorization");
+
     res.status(401).json({ message: "Invalid token." });
+    return res.redirect("/login");
   }
 };
 

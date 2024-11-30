@@ -2,40 +2,75 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  gap: 20px; /* Разстояние между секциите */
   padding: 20px;
 }
 
-.user-profile,
-.created-movies,
-.favourite-movies {
+.user-profile {
+  flex: 1 1 100%; /* Занимава цялата ширина */
   background-color: #16213e;
   padding: 20px;
   border-radius: 10px;
   color: white;
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-.user-profile {
   text-align: center;
-}
 
-.user-avatar {
-  border-radius: 50%;
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-  margin-top: 10px;
+  img {
+    margin-top: 10px;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  }
 }
 
 .created-movies,
-.favourite-movies {
-  width: 48%; /* Половината от ширината */
+.favourites-section {
+  flex: 1 1 48%; /* Половината ширина */
+  background-color: #1a1a2e;
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
 }
 
 .movie-card {
-  margin-bottom: 15px;
-  background-color: #1a1a2e;
-  padding: 10px;
+  background-color: #16213e;
+  padding: 15px;
   border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+
+  h3 {
+    margin: 0 0 10px;
+  }
+
+  img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 5px 15px;
+    background-color: #e94560;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #d13450;
+    }
+  }
+}
+
+h2 {
+  margin-bottom: 15px;
+  color: #e94560;
+}
+
+p {
+  margin: 10px 0;
 }

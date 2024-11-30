@@ -1,1 +1,27 @@
-<p>movie-details works!</p>
+<div class="movie-details-container">
+  <h1>{{ movie?.title }}</h1>
+  <img [src]="movie?.image" alt="{{ movie?.title }}" />
+  <p><strong>Genre:</strong> {{ movie?.genre }}</p>
+  <p><strong>Release Date:</strong> {{ movie?.releaseDate }}</p>
+  <p><strong>Description:</strong> {{ movie?.desc }}</p>
+  <p>
+    <strong>Average Rating:</strong>
+    {{ averageRating.toFixed(1) }} ({{ totalRatings }} ratings)
+  </p>
+
+  <!-- Рейтинг секция -->
+  <div class="rating-section">
+    <h3>Rate this Movie</h3>
+    <div class="stars">
+      <span
+        *ngFor="let star of [1, 2, 3, 4, 5]; let i = index"
+        [class.filled]="i < userRating"
+        (click)="rateMovie(i + 1)"
+      >
+        ★
+      </span>
+    </div>
+  </div>
+
+  <button (click)="addToFavourites(movie._id)">Add to Favourites</button>
+</div>

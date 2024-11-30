@@ -7,6 +7,7 @@ const movieSchema = new mongoose.Schema({
   releaseDate: { required: true, type: String },
   image: { required: true, type: String },
   rating: { type: Number, default: 0 },
+  totalRating: { type: Number, default: 0 },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

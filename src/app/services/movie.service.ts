@@ -46,8 +46,33 @@ export class MovieService {
     return this.http.get<any[]>(`${this.apiURL}/my-movies`, { headers });
   }
 
+  addFavourite(movieId: string): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.post<any>(
+      `${this.apiURL}/favourites`,
+      { movieId },
+      { headers }
+    );
+  }
+
   getFavouriteMovies(): Observable<any[]> {
     const headers = this.getAuthHeaders();
     return this.http.get<any[]>(`${this.apiURL}/favourites`, { headers });
+  }
+
+  removeFavourite(movieId: string): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.delete<any>(`${this.apiURL}/favourites/${movieId}`, {
+      headers,
+    });
+  }
+
+  rateMovie(movieId: string, rating: number): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.post<any>(
+      `${this.apiURL}/${movieId}/rate`,
+      { rating },
+      { headers }
+    );
   }
 }

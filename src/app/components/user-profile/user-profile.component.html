@@ -4,32 +4,40 @@
     <h2>User Profile</h2>
     <p><strong>Username:</strong> {{ username }}</p>
     <p><strong>Email:</strong> {{ email }}</p>
-    <img [src]="userAvatar" alt="User Avatar" class="user-avatar" />
+    <img [src]="userAvatar" alt="User Avatar" />
   </div>
 
   <!-- Created Movies -->
   <div class="created-movies">
     <h2>Created Movies</h2>
-    <div *ngIf="createdMovies.length === 0">
-      You haven't created any movies yet.
-    </div>
-    <div *ngFor="let movie of createdMovies" class="movie-card">
-      <h3>{{ movie.title }}</h3>
-      <p>{{ movie.desc }}</p>
-      <button (click)="onEdit(movie._id)">Edit</button>
-      <button (click)="onDelete(movie._id)">Delete</button>
-    </div>
+    <ng-container *ngIf="createdMovies.length > 0; else noCreatedMovies">
+      <div *ngFor="let movie of createdMovies" class="movie-card">
+        <h3>{{ movie.title }}</h3>
+        <p>{{ movie.desc }}</p>
+        <button (click)="onEdit(movie._id)">Edit</button>
+        <button (click)="onDelete(movie._id)">Delete</button>
+      </div>
+    </ng-container>
+    <ng-template #noCreatedMovies>
+      <p>You haven't created any movies yet.</p>
+    </ng-template>
   </div>
 
   <!-- Favourite Movies -->
-  <div class="favourite-movies">
-    <h2>Favourite Movies</h2>
-    <div *ngIf="favouriteMovies.length === 0">
-      You haven't added any favourites yet.
-    </div>
-    <div *ngFor="let movie of favouriteMovies" class="movie-card">
-      <h3>{{ movie.title }}</h3>
-      <p>{{ movie.desc }}</p>
-    </div>
+  <div class="favourites-section">
+    <h2>Любими филми</h2>
+    <ng-container *ngIf="favouriteMovies.length > 0; else noFavourites">
+      <div *ngFor="let movie of favouriteMovies" class="movie-card">
+        <h3>{{ movie.title }}</h3>
+        <img [src]="movie.image" alt="{{ movie.title }}" />
+        <p>{{ movie.genre }}</p>
+        <button (click)="removeFromFavourites(movie._id)">
+          Премахни от любими
+        </button>
+      </div>
+    </ng-container>
+    <ng-template #noFavourites>
+      <p>Все още нямате любими филми.</p>
+    </ng-template>
   </div>
 </div>

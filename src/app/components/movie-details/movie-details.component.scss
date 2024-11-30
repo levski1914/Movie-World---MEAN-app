@@ -1,0 +1,43 @@
+.movie-details-container {
+  text-align: center;
+  color: white;
+
+  img {
+    max-width: 300px;
+    border-radius: 10px;
+  }
+
+  .rating-section {
+    margin-top: 20px;
+
+    .stars {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+
+      span {
+        font-size: 30px;
+        cursor: pointer;
+        color: #ccc;
+
+        &.filled {
+          color: #e94560;
+        }
+      }
+    }
+  }
+
+  button {
+    background-color: #e94560;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 20px;
+
+    &:hover {
+      background-color: #d13450;
+    }
+  }
+}

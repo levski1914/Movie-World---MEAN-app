@@ -36,8 +36,8 @@ export class UserProfileComponent implements OnInit {
         this.username = user.username;
         this.email = user.email;
       },
-      (error) => {
-        console.log('Error fetching user data: ', error);
+      (err) => {
+        console.log('Error fetching user data: ', err);
       }
     );
   }
@@ -48,8 +48,8 @@ export class UserProfileComponent implements OnInit {
         console.log('Fetched created movies:', movies);
         this.createdMovies = movies;
       },
-      (error) => {
-        console.log('Error fetching created movies', error);
+      (err) => {
+        console.log('Error fetching created movies', err);
       }
     );
   }
@@ -57,10 +57,22 @@ export class UserProfileComponent implements OnInit {
   loadFavouriteMovies(): void {
     this.movieService.getFavouriteMovies().subscribe(
       (movies) => {
-        this.favouriteMovies = movies;
+        this.favouriteMovies = movies.map((favourite) => favourite.movie);
       },
       (error) => {
         console.error('Error fetching favourite movies:', error);
+      }
+    );
+  }
+
+  removeFromFavourites(movieId: string): void {
+    this.movieService.removeFavourite(movieId).subscribe(
+      () => {
+        alert('Филмът беше премахнат от любими.');
+        this.loadFavouriteMovies();
+      },
+      (error) => {
+        console.error('Error removing favourite movie:', error);
       }
     );
   }
