@@ -7,7 +7,18 @@ const movieSchema = new mongoose.Schema({
   releaseDate: { required: true, type: String },
   image: { required: true, type: String },
   rating: { type: Number, default: 0 },
-  totalRating: { type: Number, default: 0 },
+  ratings: [
+    {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: false,
+      },
+      guestId: { type: String, required: false }, // За гости
+      rating: { type: Number, required: true },
+      anonymous: { type: Boolean, default: false },
+    },
+  ],
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

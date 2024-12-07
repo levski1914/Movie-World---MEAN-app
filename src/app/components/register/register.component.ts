@@ -9,7 +9,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
-import { response } from 'express';
+
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -41,25 +41,31 @@ export class RegisterComponent {
         (response) => {
           console.log('Registration successful!', response);
 
+          // Auto-login after successful registration
           this.authService.login({ email, password }).subscribe(
             (loginResponse) => {
               console.log('Auto-login successful!', loginResponse);
               this.authService.saveToken(loginResponse.token);
-              this.authService.saveUsername(username);
+              this.authService.saveUsername(loginResponse.username);
               this.router.navigate(['/home']);
             },
             (loginError) => {
               console.error('Auto-login failed', loginError);
+              alert(
+                'Auto-login failed after registration. Please login manually.'
+              );
             }
           );
         },
         (error) => {
           console.error('Registration failed', error);
-          alert('Registration failed!');
+          const errorMessage =
+            error.error?.message || 'An error occurred during registration.';
+          alert(errorMessage);
         }
       );
     } else {
-      alert('Please, check inputs!');
+      alert('Please check your inputs!');
     }
   }
 

@@ -157,33 +157,78 @@ router.delete("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-router.post("/:id/rate", authMiddleware, async (req, res) => {
-  const { rating } = req.body;
+router.get("/:id", async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.id);
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
 
-  if (rating < 1 || rating > 5) {
-    return res.status(400).json({ message: "Rating must be between 1 and 5" });
+    const averageRating =
+      movie.ratings.reduce((sum, r) => sum + r.rating, 0) /
+      (movie.ratings.length || 1);
+
+    res.status(200).json({
+      movie,
+      averageRating: averageRating || 0,
+      totalRatings: movie.ratings.length || 0,
+      ratings: movie.ratings || [],
+    });
+  } catch (error) {
+    console.error("Error fetching movie details:", error);
+    res.status(500).json({ message: "Error fetching movie details", error });
+  }
+});
+router.post("/:id/rate", async (req, res) => {
+  const { rating, userId, guestId } = req.body;
+
+  console.log("Received data:", { userId, guestId, rating });
+
+  if (!rating || (!userId && !guestId)) {
+    return res
+      .status(400)
+      .json({ message: "Rating, User ID, or Guest ID is required." });
   }
 
   try {
     const movie = await Movie.findById(req.params.id);
     if (!movie) {
-      res.status(404).json({ message: "Movie not found" });
+      return res.status(404).json({ message: "Movie not found" });
     }
 
-    const newTotalRatings = movie.totalRating + 1;
-    const newRating =
-      (movie.rating * movie.totalRating + rating) / newTotalRatings;
+    const existingRating = movie.ratings.find(
+      (r) => r.userId?.toString() === userId || r.guestId === guestId
+    );
 
-    movie.totalRating = newTotalRatings;
-    movie.rating = newRating;
+    if (existingRating) {
+      existingRating.rating = rating;
+    } else {
+      movie.ratings.push({ userId, guestId, rating });
+    }
+
+    movie.rating =
+      movie.ratings.reduce((sum, r) => sum + r.rating, 0) /
+      movie.ratings.length;
 
     await movie.save();
-    res
-      .status(200)
-      .json({ message: "rating added successfully", rating: movie.rating });
+
+    res.status(200).json({
+      message: "Rating updated successfully",
+      averageRating: movie.rating,
+      totalRatings: movie.ratings.length,
+    });
   } catch (error) {
-    res.status(500).json({ message: "error updating rating", error });
+    console.error("Error updating rating:", error);
+    res.status(500).json({ message: "Error updating rating", error });
   }
 });
-
+router.get("/genre/:genre", async (req, res) => {
+  try {
+    const genre = req.params.genre;
+    const movies = await Movie.find({ genre: genre });
+    res.status(200).json(movies);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching movies by genre", error });
+  }
+});
 module.exports = router;

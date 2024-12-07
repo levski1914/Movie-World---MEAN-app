@@ -1,27 +1,40 @@
-<div class="movie-details-container">
-  <h1>{{ movie?.title }}</h1>
-  <img [src]="movie?.image" alt="{{ movie?.title }}" />
-  <p><strong>Genre:</strong> {{ movie?.genre }}</p>
-  <p><strong>Release Date:</strong> {{ movie?.releaseDate }}</p>
-  <p><strong>Description:</strong> {{ movie?.desc }}</p>
-  <p>
-    <strong>Average Rating:</strong>
-    {{ averageRating.toFixed(1) }} ({{ totalRatings }} ratings)
-  </p>
-
-  <!-- Рейтинг секция -->
+<div class="movie-details-container" *ngIf="movie; else loading">
+  <div class="movie-header">
+    <h1>{{ movie.title || "Unknown Title" }}</h1>
+  </div>
+  <div class="movie-content">
+    <img
+      [src]="movie.image || 'default-image.jpg'"
+      alt="{{ movie.title || 'Movie' }}"
+      class="movie-image"
+    />
+    <div class="movie-info">
+      <p><strong>Genre:</strong> {{ movie.genre || "N/A" }}</p>
+      <p><strong>Release Date:</strong> {{ movie.releaseDate || "Unknown" }}</p>
+      <p>
+        <strong>Description:</strong>
+        {{ movie.desc || "No description available." }}
+      </p>
+      <p>
+        <strong>Average Rating:</strong>
+        {{ averageRating.toFixed(1) }} ({{ totalRatings }} ratings)
+      </p>
+    </div>
+  </div>
   <div class="rating-section">
     <h3>Rate this Movie</h3>
     <div class="stars">
       <span
         *ngFor="let star of [1, 2, 3, 4, 5]; let i = index"
-        [class.filled]="i < userRating"
+        [class.filled]="i + 1 <= userRating"
         (click)="rateMovie(i + 1)"
       >
         ★
       </span>
     </div>
   </div>
-
-  <button (click)="addToFavourites(movie._id)">Add to Favourites</button>
 </div>
+
+<ng-template #loading>
+  <p>Loading movie details...</p>
+</ng-template>

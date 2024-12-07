@@ -17,7 +17,7 @@ router.post("/register", async (req, res) => {
 
     await user.save();
     const token = jwt.sign({ id: user._id }, process.env.SECRET, {
-      expiresIn: "1h",
+      expiresIn: "2h",
     });
 
     res.status(201).json({ message: "User registered successfully", token });
@@ -36,16 +36,19 @@ router.post("/login", async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.json(400).json({ message: "Invalid credientals" });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const token = jwt.sign({ id: user._id }, process.env.SECRET, {
-      expiresIn: "1h",
+      expiresIn: "2h",
     });
-
-    res
-      .status(200)
-      .json({ message: "login success", token, username: user.username });
+    
+    res.status(200).json({
+      message: "login success",
+      token,
+      username: user.username,
+      userId: user._id, // Добави userId в отговора
+    });
   } catch (err) {
     res.status(500).json({ message: "Server error", err });
   }

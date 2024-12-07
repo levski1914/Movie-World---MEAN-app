@@ -1,43 +1,83 @@
 .movie-details-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #1e1e2f;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-family: Arial, sans-serif;
+}
+
+.movie-header {
   text-align: center;
-  color: white;
+  margin-bottom: 20px;
+}
 
-  img {
+.movie-content {
+  display: flex;
+  gap: 20px;
+}
+
+.movie-image {
+  width: 300px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.movie-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.favourites-btn {
+  padding: 10px 20px;
+  background-color: #e63946;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease;
+}
+
+.favourites-btn:hover {
+  background-color: #d62839;
+}
+
+.rating-section {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.stars {
+  display: inline-block;
+  margin: 10px 0;
+}
+
+.stars span {
+  cursor: pointer;
+  font-size: 32px;
+  color: gray;
+  transition: color 0.3s ease;
+}
+
+.stars span.filled {
+  color: gold;
+}
+
+@media (max-width: 768px) {
+  .movie-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .movie-image {
+    width: 100%;
     max-width: 300px;
-    border-radius: 10px;
-  }
-
-  .rating-section {
-    margin-top: 20px;
-
-    .stars {
-      display: flex;
-      justify-content: center;
-      gap: 5px;
-
-      span {
-        font-size: 30px;
-        cursor: pointer;
-        color: #ccc;
-
-        &.filled {
-          color: #e94560;
-        }
-      }
-    }
-  }
-
-  button {
-    background-color: #e94560;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-top: 20px;
-
-    &:hover {
-      background-color: #d13450;
-    }
   }
 }

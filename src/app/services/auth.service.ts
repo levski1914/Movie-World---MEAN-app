@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -18,16 +19,11 @@ export class AuthService {
 
   isLoggedIn$ = this.isLoggedInSubject.asObservable();
   username$ = this.usernameSubject.asObservable();
-  private isLocalStorageAvailable(): boolean {
-    try {
-      const testKey = '__test__';
-      localStorage.setItem(testKey, testKey);
-      localStorage.removeItem(testKey);
-      return true;
-    } catch {
-      return false;
-    }
-  }
+
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   private isLoggedInFromStorage(): boolean {
     if (!this.isLocalStorageAvailable()) return false;
@@ -39,13 +35,57 @@ export class AuthService {
     return localStorage.getItem('username');
   }
 
-  constructor(private http: HttpClient) {}
+  private isLocalStorageAvailable(): boolean {
+    try {
+      if (!isPlatformBrowser(this.platformId)) {
+        return false; // Не сме в браузър
+      }
+      const testKey = '__test__';
+      localStorage.setItem(testKey, testKey);
+      localStorage.removeItem(testKey);
+      return true;
+    } catch {
+      return false;
+    }
+  }
 
+  initializeAuthState(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return; // Прекрати изпълнението, ако не сме в браузър
+    }
+
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      localStorage.removeItem('userId');
+      localStorage.removeItem('guestId');
+      localStorage.removeItem('username');
+
+      if (!localStorage.getItem('guestId')) {
+        const guestId = 'guest-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('guestId', guestId);
+      }
+    }
+  }
   login(credentials: { email: string; password: string }): Observable<any> {
     return this.http.post(`${this.apiURL}/login`, credentials).pipe(
+      tap((response: any) => {
+        if (response.token) {
+          this.saveToken(response.token);
+          localStorage.setItem('userId', response.userId); // Запази userId
+          localStorage.removeItem('guestId'); // Премахни guestId, ако потребителят е логнат
+        } else {
+          localStorage.removeItem('userId'); // Ако няма токен, премахни userId
+          localStorage.removeItem('guestId'); // Също премахни guestId
+        }
+        if (response.username) {
+          this.saveUsername(response.username);
+        }
+      }),
       catchError((error) => {
         console.error('Login error:', error);
-        return throwError(() => new Error('Login failed'));
+        return throwError(
+          () => new Error(error.error?.message || 'Login failed')
+        );
       })
     );
   }
@@ -58,10 +98,13 @@ export class AuthService {
     return this.http.post(`${this.apiURL}/register`, user).pipe(
       catchError((error) => {
         console.error('Registration error:', error);
-        return throwError(() => new Error('Registration failed'));
+        return throwError(
+          () => new Error(error.error?.message || 'Registration failed')
+        );
       })
     );
   }
+
   saveToken(token: string): void {
     if (this.isLocalStorageAvailable()) {
       localStorage.setItem('authToken', token);
@@ -78,31 +121,42 @@ export class AuthService {
 
   logout(): void {
     if (this.isLocalStorageAvailable()) {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('username');
+      localStorage.clear(); // Изчисти цялото локално хранилище
       this.isLoggedInSubject.next(false);
+      this.usernameSubject.next(null);
     }
   }
 
   isLoggedIn(): boolean {
-    if (!this.isLocalStorageAvailable()) {
-      return false;
-    }
-    return !!localStorage.getItem('authToken');
+    return !!this.getToken();
   }
 
   getUsername(): string | null {
-    return localStorage.getItem('username');
+    return this.usernameSubject.value;
   }
 
   getToken(): string | null {
-    return localStorage.getItem('authToken');
+    return this.isLocalStorageAvailable()
+      ? localStorage.getItem('authToken')
+      : null;
   }
 
   getUserProfile(): Observable<any> {
-    const token = localStorage.getItem('authToken');
-    return this.http.get(`${this.apiURL}/profile`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const token = this.getToken();
+    if (!token) {
+      return throwError(() => new Error('No token found'));
+    }
+    return this.http
+      .get(`${this.apiURL}/profile`, {
+        headers: new HttpHeaders({ Authorization: `Bearer ${token}` }),
+      })
+      .pipe(
+        catchError((error) => {
+          console.error('Error fetching profile:', error);
+          return throwError(
+            () => new Error(error.error?.message || 'Failed to fetch profile')
+          );
+        })
+      );
   }
 }

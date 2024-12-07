@@ -1,62 +1,73 @@
-<div class="container mt-4">
+<div class="container-xxl mt-4">
+  <!-- Trending Movies -->
   <div class="row justify-content-center">
-    <div class="col-md-4 w-50 h-50" *ngFor="let newmovie of hotMovies">
+    <div class="col" *ngFor="let movie of trendingMovies">
       <div
         class="card mb-4 w-100 rounded-5"
-        [ngStyle]="{ 'box-shadow': newmovie.shadow }"
-        style="height: 300px"
+        [ngStyle]="{ 'box-shadow': '0px 10px 20px rgba(0, 0, 0, 0.8)' }"
+        style="height: 400px"
       >
         <img
-          #newMovieImage
-          src="{{ newmovie.image }}"
-          class="rounded-5 card-img-top h-100 object-fit-fill"
-          alt="{{ newmovie.title }}"
-          (load)="applyBoxShadow(newMovieImage, newmovie)"
+          src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+          class="rounded-5 card-img-top w-100 h-100 object-fit-fill"
+          alt="{{ movie.title }}"
         />
       </div>
     </div>
   </div>
+  <!-- Genres -->
   <div class="row my-3 justify-content-between">
     <div
-      class="col-md-4 h-50 text-center"
+      class="col-md-4 h-25 text-center"
       style="width: 180px"
-      *ngFor="let genres of genres"
+      *ngFor="let genre of genres"
     >
       <div
         class="card buttonGenres mb-4 w-100 genres rounded-5 border-0 shadow"
-        style="height: 100px"
+        [ngClass]="{ active: genre.genre === selectedGenre }"
+        style="height: 60px; cursor: pointer"
+        (click)="loadMovies(genre.genre)"
       >
         <div class="card-body align-content-center text-white">
-          <h5 class="card-title fs-5">{{ genres.genre }}</h5>
+          <h5 class="card-title fs-5">{{ genre.genre }}</h5>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="row justify-content-between">
-    <div
-      class="col-md-4 p-1 g-1 h-50"
-      style="width: 220px"
-      *ngFor="let movie of movies"
-    >
+  <!-- Other Movies -->
+  <div class="row justify-content-between h-100">
+    <ng-container *ngIf="movies.length > 0; else noMovies">
       <div
-        class="card lastMovies hover border-0 mb-4 w-100 bg-transparent"
-        style="height: 350px"
-        [ngStyle]="{ 'box-shadow': movie.shadow }"
+        class="col-md-4 p-1 g-1 h-50"
+        style="width: 250px; height: 100%"
+        *ngFor="let movie of movies"
       >
-        <img
-          #newMovieImage
-          src="https://m4.netinfo.bg/media/images/50973/50973879/616-346-dyzhd-i-sniag-v-kraia-na-noemvri.jpg"
-          class="card-img-top object-fit-fill rounded-4 h-100"
-          alt="{{ movie.title }}"
-          crossorigin="anonymous"
-          (load)="applyBoxShadow(newMovieImage, movie)"
-        />
-        <div class="card-body text-white">
-          <h5 class="card-title fs-5">{{ movie.title }}</h5>
-          <p class="card-text">{{ movie.genre }}</p>
+        <div
+          class="card trendingMovies hover border-0 mb-4 w-100 bg-transparent"
+          style="height: 450px"
+          [ngStyle]="{
+            'box-shadow': movie.shadow || '0px 10px 20px rgba(0, 0, 0, 0.5)'
+          }"
+        >
+          <img
+            [src]="
+              movie.poster_path
+                ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path
+                : movie.image
+            "
+            class="card-img-top object-fit-fill rounded-4 h-100"
+            alt="{{ movie.title }}"
+          />
+          <div class="card-body text-white">
+            <h5 class="card-title fs-5">{{ movie.title }}</h5>
+            <p class="card-text">Trending</p>
+          </div>
         </div>
       </div>
-    </div>
+    </ng-container>
+    <ng-template #noMovies>
+      <p class="text-center text-white">No trending movies available.</p>
+    </ng-template>
   </div>
 </div>

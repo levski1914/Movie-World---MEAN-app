@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
-  const token = req.header("Authorization")?.split(" ")[1];
+  const token = req.header("Authorization")?.split(" ")[1]; // Bearer token
   if (!token) {
     return res
       .status(401)
@@ -10,13 +10,14 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const verified = jwt.verify(token, process.env.SECRET);
+    console.log("Decoded token:", verified); // Провери какво се декодира тук
     req.user = verified;
     next();
   } catch (error) {
-    res.clearCookie("Authorization");
-
-    res.status(401).json({ message: "Invalid token." });
-    return res.redirect("/login");
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Token has expired." });
+    }
+    return res.status(401).json({ message: "Invalid token." });
   }
 };
 

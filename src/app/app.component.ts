@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { SnowfallComponent } from './snowfall/snowfall.component';
@@ -24,6 +24,11 @@ export class AppComponent {
     this.authService.username$.subscribe((username) => {
       this.username = username;
     });
+  }
+
+  ngOnInit(): void {
+    // Инициализиране на състоянието на потребителя при стартиране на приложението
+    this.authService.initializeAuthState();
   }
   onToggle() {
     this.toggleStyle = !this.toggleStyle;

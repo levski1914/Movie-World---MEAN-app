@@ -1,13 +1,19 @@
 .card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-radius: 15px;
+  border-radius: 20px;
 }
 .card:hover {
   transform: scale(1.05);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
-.lastMovies {
-  background-color: #e94560 !important;
+
+.trendingMovies {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .genres {
@@ -22,4 +28,12 @@
 .genres:hover {
   background-color: #ff4d6d;
   color: #fff;
+}
+.selected-genre {
+  border: 2px solid #ffffff;
+}
+
+.card.buttonGenres.active {
+  background-color: #f50057;
+  color: white;
 }
