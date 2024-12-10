@@ -34,12 +34,20 @@ export class MovieDetailsComponent implements OnInit {
 
     const movieId = this.route.snapshot.paramMap.get('id');
     if (movieId) {
-      this.loadMovieDetails(movieId);
+      if (this.isTMDbId(movieId)) {
+        this.loadTMDbMovieDetails(movieId.replace('tmdb-', ''));
+      } else {
+        this.loadMovieDetails(movieId);
+      }
     }
   }
 
   generateGuestId(): string {
     return 'guest-' + Math.random().toString(36).substr(2, 9);
+  }
+
+  isTMDbId(id: string): boolean {
+    return id.startsWith('tmdb-');
   }
 
   loadMovieDetails(movieId: string): void {
@@ -67,7 +75,40 @@ export class MovieDetailsComponent implements OnInit {
     );
   }
 
+  loadTMDbMovieDetails(tmdbId: string): void {
+    this.movieService.getTMDbMovieDetails(tmdbId).subscribe(
+      (response) => {
+        this.movie = response;
+      },
+      (error) => {
+        console.error('Error fetching TMDb movie details:', error);
+      }
+    );
+  }
+
+  getTMDbImage(path: string | null): string | null {
+    return path ? `https://image.tmdb.org/t/p/w500${path}` : null;
+  }
+
+  getGenre(movie: any): string {
+    if (movie.genre) {
+      return movie.genre;
+    } else if (movie.genres && movie.genres.length > 0) {
+      return movie.genres.map((g: any) => g.name).join(', ');
+    }
+    return 'Unknown';
+  }
+
+  isTMDbMovie(movie: any): boolean {
+    return !!movie.id && typeof movie.id === 'number';
+  }
+
   rateMovie(rating: number): void {
+    if (this.isTMDbMovie(this.movie)) {
+      alert('Rating is only available for local movies.');
+      return;
+    }
+
     const userId = localStorage.getItem('userId'); // ID на потребителя (ако е логнат)
     const guestId = localStorage.getItem('guestId'); // ID на госта
 
@@ -97,7 +138,6 @@ export class MovieDetailsComponent implements OnInit {
         }
       );
   }
-
   addToFavourites(movieId: string): void {
     this.movieService.addFavourite(movieId).subscribe(
       () => alert('Movie added to favourites!'),

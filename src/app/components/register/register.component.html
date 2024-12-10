@@ -1,51 +1,51 @@
 <div class="register-container">
-  <h2 class="text-center">Регистрация</h2>
+  <h2 class="text-center">Register</h2>
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
-      <label for="username">Потребителско име</label>
+      <label for="username">Username</label>
       <input
         type="text"
         id="username"
         formControlName="username"
         class="form-control"
-        placeholder="Въведете потребителско име"
+        placeholder="Your username..."
       />
     </div>
     <div class="form-group mt-3">
-      <label for="email">Имейл</label>
+      <label for="email">Email</label>
       <input
         type="email"
         formControlName="email"
         id="email"
         class="form-control"
-        placeholder="Въведете имейл"
+        placeholder="Your email..."
       />
     </div>
     <div class="form-group mt-3">
-      <label for="password">Парола</label>
+      <label for="password">Password</label>
       <input
         type="password"
         formControlName="password"
         id="password"
         class="form-control"
-        placeholder="Въведете парола"
+        placeholder="Your password"
       />
     </div>
     <div class="form-group mt-3">
-      <label for="confirm-password">Потвърдете паролата</label>
+      <label for="confirm-password">Confirm password</label>
       <input
         type="password"
         formControlName="confirmPassword"
         id="confirm-password"
         class="form-control"
-        placeholder="Потвърдете паролата"
+        placeholder="Confirm password"
       />
     </div>
     <button type="submit" class="btn btn-primary btn-block mt-4">
-      Регистрация
+      Register
     </button>
     <p class="text-center mt-3">
-      Вече имате акаунт? <a routerLink="/login">Вход</a>
+      Already have account? <a routerLink="/login">Login</a>
     </p>
   </form>
 </div>

@@ -38,7 +38,7 @@ export class AuthService {
   private isLocalStorageAvailable(): boolean {
     try {
       if (!isPlatformBrowser(this.platformId)) {
-        return false; // Не сме в браузър
+        return false;
       }
       const testKey = '__test__';
       localStorage.setItem(testKey, testKey);
@@ -51,7 +51,7 @@ export class AuthService {
 
   initializeAuthState(): void {
     if (!isPlatformBrowser(this.platformId)) {
-      return; // Прекрати изпълнението, ако не сме в браузър
+      return;
     }
 
     const authToken = localStorage.getItem('authToken');
@@ -71,11 +71,11 @@ export class AuthService {
       tap((response: any) => {
         if (response.token) {
           this.saveToken(response.token);
-          localStorage.setItem('userId', response.userId); // Запази userId
-          localStorage.removeItem('guestId'); // Премахни guestId, ако потребителят е логнат
+          localStorage.setItem('userId', response.userId);
+          localStorage.removeItem('guestId');
         } else {
-          localStorage.removeItem('userId'); // Ако няма токен, премахни userId
-          localStorage.removeItem('guestId'); // Също премахни guestId
+          localStorage.removeItem('userId');
+          localStorage.removeItem('guestId');
         }
         if (response.username) {
           this.saveUsername(response.username);
@@ -121,7 +121,7 @@ export class AuthService {
 
   logout(): void {
     if (this.isLocalStorageAvailable()) {
-      localStorage.clear(); // Изчисти цялото локално хранилище
+      localStorage.clear();
       this.isLoggedInSubject.next(false);
       this.usernameSubject.next(null);
     }

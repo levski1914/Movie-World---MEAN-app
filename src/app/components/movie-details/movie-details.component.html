@@ -1,23 +1,36 @@
 <div class="movie-details-container" *ngIf="movie; else loading">
   <div class="movie-header">
-    <h1>{{ movie.title || "Unknown Title" }}</h1>
+    <h1>{{ movie.title || movie.original_title || "Unknown Title" }}</h1>
   </div>
   <div class="movie-content">
     <img
-      [src]="movie.image || 'default-image.jpg'"
-      alt="{{ movie.title || 'Movie' }}"
+      [src]="
+        movie.image || getTMDbImage(movie.poster_path) || 'default-image.jpg'
+      "
+      alt="{{ movie.title || movie.original_title || 'Movie' }}"
       class="movie-image"
     />
     <div class="movie-info">
-      <p><strong>Genre:</strong> {{ movie.genre || "N/A" }}</p>
-      <p><strong>Release Date:</strong> {{ movie.releaseDate || "Unknown" }}</p>
+      <p><strong>Genre:</strong> {{ getGenre(movie) || "N/A" }}</p>
       <p>
-        <strong>Description:</strong>
-        {{ movie.desc || "No description available." }}
+        <strong>Release Date:</strong>
+        {{ movie.releaseDate || movie.release_date || "Unknown" }}
       </p>
       <p>
+        <strong>Description:</strong>
+        {{ movie.desc || movie.overview || "No description available." }}
+      </p>
+      <p *ngIf="isTMDbMovie(movie)">
+        <strong>TMDb Rating:</strong>
+        {{ movie.vote_average.toFixed(1) || "N/A" }} ({{
+          movie.vote_count || 0
+        }}
+        votes)
+      </p>
+      <p *ngIf="!isTMDbMovie(movie)">
         <strong>Average Rating:</strong>
-        {{ averageRating.toFixed(1) }} ({{ totalRatings }} ratings)
+        {{ averageRating.toFixed(1) || "N/A" }} ({{ totalRatings || 0 }}
+        ratings)
       </p>
     </div>
   </div>

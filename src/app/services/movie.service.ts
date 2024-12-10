@@ -109,4 +109,15 @@ export class MovieService {
   getMoviesByGenre(genre: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiURL}/genre/${genre}`);
   }
+  getTMDbMovieDetails(tmdbId: string): Observable<any> {
+    const url = `http://localhost:5000/api/proxy/movie/${tmdbId}`;
+    return this.http.get<any>(url).pipe(
+      catchError((error: any) => {
+        console.error('Error fetching TMDb movie details:', error);
+        return throwError(
+          () => new Error('Failed to fetch movie details from TMDb')
+        );
+      })
+    );
+  }
 }

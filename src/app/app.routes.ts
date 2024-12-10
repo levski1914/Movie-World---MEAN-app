@@ -13,6 +13,7 @@ import { noAuthGuard } from './guards/no-auth.guard';
 export const appRoutes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'movie/:id', component: MovieDetailsComponent },
+  { path: 'tmdb-movie/:id', component: MovieDetailsComponent },
   { path: 'movie-list', component: MovieListComponent },
   { path: 'login', component: LoginComponent, canActivate: [noAuthGuard] },
   {

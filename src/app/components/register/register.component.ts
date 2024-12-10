@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+// import { faAdressCard } from '@fortawesome/free-solid-svg-icons';
+
+// import { faCoffee } from ;
+
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -13,13 +18,13 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, CommonModule],
+  imports: [RouterLink, ReactiveFormsModule, CommonModule, FontAwesomeModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
 })
 export class RegisterComponent {
   registerForm: FormGroup;
-
+  // faCoffee = this.faCoffee;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,

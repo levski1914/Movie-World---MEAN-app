@@ -23,4 +23,24 @@ router.get("/proxy/trending", async (req, res) => {
   }
 });
 
+router.get("/proxy/movie/:id", async (req, res) => {
+  const tmdbId = req.params.id;
+  try {
+    const response = await axios.get(`${TMDB_BASE_URL}/movie/${tmdbId}`, {
+      params: {
+        api_key: TMDB_API_KEY,
+      },
+    });
+
+    if (response.headers["content-type"].includes("application/json")) {
+      res.json(response.data);
+    } else {
+      res.status(500).json({ message: "Invalid response from TMDb API" });
+    }
+  } catch (error) {
+    console.error(`Error fetching details for TMDb movie ${tmdbId}:`, error);
+    res.status(500).json({ message: `Error fetching movie details`, error });
+  }
+});
+
 module.exports = router;

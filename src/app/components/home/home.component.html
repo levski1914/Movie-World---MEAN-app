@@ -1,9 +1,9 @@
 <div class="container-xxl mt-4">
   <!-- Trending Movies -->
   <div class="row justify-content-center">
-    <div class="col" *ngFor="let movie of trendingMovies">
+    <div class="col-5" *ngFor="let movie of trendingMovies">
       <div
-        class="card mb-4 w-100 rounded-5"
+        class="card coverImages mb-4 w-100 rounded-5"
         [ngStyle]="{ 'box-shadow': '0px 10px 20px rgba(0, 0, 0, 0.8)' }"
         style="height: 400px"
       >
@@ -62,6 +62,11 @@
           <div class="card-body text-white">
             <h5 class="card-title fs-5">{{ movie.title }}</h5>
             <p class="card-text">Trending</p>
+            <a
+              [routerLink]="['/movie', 'tmdb-' + movie.id]"
+              class="btn btn-primary"
+              >Details</a
+            >
           </div>
         </div>
       </div>
