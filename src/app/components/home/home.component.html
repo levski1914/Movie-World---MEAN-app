@@ -1,4 +1,4 @@
-<div class="container-xxl mt-4">
+<div class="container-xxl mt-4 homePage">
   <!-- Trending Movies -->
   <div class="row justify-content-center">
     <div class="col-5" *ngFor="let movie of trendingMovies">
@@ -16,7 +16,7 @@
     </div>
   </div>
   <!-- Genres -->
-  <div class="row my-3 justify-content-between">
+  <div class="row my-3 justify-content-center">
     <div
       class="col-md-4 h-25 text-center"
       style="width: 180px"
@@ -36,15 +36,15 @@
   </div>
 
   <!-- Other Movies -->
-  <div class="row justify-content-between h-100">
+  <div class="movie-grid mb-3">
     <ng-container *ngIf="movies.length > 0; else noMovies">
       <div
-        class="col-md-4 p-1 g-1 h-50"
+        class="movie-card"
         style="width: 250px; height: 100%"
         *ngFor="let movie of movies"
       >
         <div
-          class="card trendingMovies hover border-0 mb-4 w-100 bg-transparent"
+          class="card-content p-0"
           style="height: 450px"
           [ngStyle]="{
             'box-shadow': movie.shadow || '0px 10px 20px rgba(0, 0, 0, 0.5)'
@@ -56,17 +56,18 @@
                 ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path
                 : movie.image
             "
-            class="card-img-top object-fit-fill rounded-4 h-100"
+            class="movie-poster"
             alt="{{ movie.title }}"
           />
           <div class="card-body text-white">
-            <h5 class="card-title fs-5">{{ movie.title }}</h5>
-            <p class="card-text">Trending</p>
-            <a
-              [routerLink]="['/movie', 'tmdb-' + movie.id]"
-              class="btn btn-primary"
-              >Details</a
+            <h5 class="movie-title">{{ movie.title }}</h5>
+            <p class="movie-genre">Trending</p>
+            <button
+              class="details-btn"
+              [routerLink]="['/movie', movie._id || 'tmdb-' + movie.id]"
             >
+              View Details
+            </button>
           </div>
         </div>
       </div>

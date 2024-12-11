@@ -1,3 +1,7 @@
+.homePage {
+  max-width: 1500px;
+  margin: 0 auto;
+}
 .coverImages img {
   background-size: cover;
 }
@@ -40,4 +44,80 @@
 .card.buttonGenres.active {
   background-color: #f50057;
   color: white;
+}
+.movie-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  align-items: stretch;
+  margin: 0 auto;
+  max-width: 1400px;
+}
+
+.movie-card {
+  flex: 1 1 270px;
+  max-width: 270px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #1a1a2e;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  margin: 5px;
+  text-align: center;
+}
+.movie-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+}
+
+.card-content {
+  padding: 15px;
+  text-align: center;
+}
+
+.movie-poster {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.movie-title {
+  font-size: 1.2rem;
+  color: #ff4d6d;
+  margin-bottom: 5px;
+}
+
+.movie-genre,
+.movie-release,
+.movie-rating {
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+.details-btn {
+  padding: 10px 15px;
+  border: none;
+  background-color: #ff4d6d;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.details-btn:hover {
+  background-color: #ff6d85;
+}
+
+/* No Results */
+.no-results {
+  text-align: center;
+  font-size: 1.2rem;
+  // color: #ff4d6d;
+  margin-top: 30px;
 }

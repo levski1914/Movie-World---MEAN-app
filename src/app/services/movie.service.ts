@@ -120,4 +120,8 @@ export class MovieService {
       })
     );
   }
+  getGenres(): Observable<{ genres: Array<{ id: number; name: string }> }> {
+    const url = 'http://localhost:5000/api/proxy/genres';
+    return this.http.get<{ genres: Array<{ id: number; name: string }> }>(url);
+  }
 }

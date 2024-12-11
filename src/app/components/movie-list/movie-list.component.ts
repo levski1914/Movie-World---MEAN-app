@@ -23,21 +23,56 @@ export class MovieListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadMovies();
+    this.loadGenres();
   }
-
+  getTMDbImage(path: string | null): string {
+    return path ? `https://image.tmdb.org/t/p/w500${path}` : 'placeholder.jpg';
+  }
   loadMovies(): void {
     this.movieService.getMovies().subscribe(
-      (data) => {
-        this.movies = data;
-        this.filteredMovies = [...this.movies];
-        this.genre = [...new Set(this.movies.map((movie) => movie.genre))];
+      (localMovies) => {
+        this.movieService.getTrendingMovies().subscribe(
+          (tmdbMovies) => {
+            const combinedMovies = [...localMovies, ...tmdbMovies.results];
+            this.movies = combinedMovies;
+            this.filteredMovies = [...this.movies];
+            this.loadGenres();
+          },
+          (error) => console.error('Error loading TMDb movies:', error)
+        );
+      },
+      (error) => console.error('Error loading local movies:', error)
+    );
+  }
+
+  loadGenres(): void {
+    this.movieService.getGenres().subscribe(
+      (data: { genres: Array<{ id: number; name: string }> }) => {
+        if (data && data.genres) {
+          const genreMap: Map<number, string> = new Map(
+            data.genres.map((g) => [g.id, g.name])
+          );
+          this.genre = data.genres.map((g) => g.name);
+          this.assignGenresToMovies(genreMap);
+        }
       },
       (error) => {
-        console.error('Error loading movies:', error);
+        console.error('Error loading genres:', error);
       }
     );
   }
 
+  assignGenresToMovies(genreMap: Map<number, string>): void {
+    this.movies.forEach((movie) => {
+      if (movie.genre_ids) {
+        movie.genre = movie.genre_ids
+          .map((id: number) => genreMap.get(id))
+          .filter((g: string | undefined): g is string => g !== undefined)
+          .join(', ');
+      }
+    });
+    this.filterMovies();
+  }
   filterMovies(): void {
     this.filteredMovies = this.movies.filter((movie) => {
       const matchesTitle = movie.title
@@ -45,7 +80,7 @@ export class MovieListComponent implements OnInit {
         .includes(this.searchQuery.toLowerCase());
 
       const matchesGenre =
-        this.selectedGenre === '' || movie.genre === this.selectedGenre;
+        this.selectedGenre === '' || movie.genre.includes(this.selectedGenre);
       return matchesTitle && matchesGenre;
     });
 
@@ -58,8 +93,11 @@ export class MovieListComponent implements OnInit {
     } else if (this.sortOption === 'releaseDate') {
       this.filteredMovies.sort(
         (a, b) =>
-          new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime()
+          new Date(a.releaseDate || a.release_date).getTime() -
+          new Date(b.releaseDate || b.release_date).getTime()
       );
+    } else if (this.sortOption === 'rating') {
+      this.filteredMovies.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     }
   }
 }

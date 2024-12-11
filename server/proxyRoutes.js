@@ -43,4 +43,23 @@ router.get("/proxy/movie/:id", async (req, res) => {
   }
 });
 
+router.get("/proxy/genres", async (req, res) => {
+  try {
+    const response = await axios.get(`${TMDB_BASE_URL}/genre/movie/list`, {
+      params: {
+        api_key: TMDB_API_KEY,
+      },
+    });
+
+    if (response.data && response.data.genres) {
+      res.json(response.data);
+    } else {
+      res.status(500).json({ message: "Invalid response from TMDb API" });
+    }
+  } catch (error) {
+    console.error("Error fetching genres:", error);
+    res.status(500).json({ message: "Error fetching genres", error });
+  }
+});
+
 module.exports = router;

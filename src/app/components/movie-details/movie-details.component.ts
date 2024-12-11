@@ -105,7 +105,9 @@ export class MovieDetailsComponent implements OnInit {
 
   rateMovie(rating: number): void {
     if (this.isTMDbMovie(this.movie)) {
-      alert('Rating is only available for local movies.');
+      alert(`Rating for TMDb movies is stored locally.`);
+      // Съхранявайте рейтинга локално или изпращайте на бекенда, ако желаете
+      this.userRating = rating;
       return;
     }
 

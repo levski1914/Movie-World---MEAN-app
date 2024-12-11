@@ -1,36 +1,61 @@
 <div class="movie-list">
-  <h2>All Movies</h2>
+  <h2 class="title">All Movies</h2>
 
-  <!-- Search bar -->
+  <!-- Search and Filters -->
   <div class="filters">
     <input
+      class="search-bar"
       type="text"
-      placeholder="Search by title..."
+      placeholder="Search movies..."
       [(ngModel)]="searchQuery"
       (input)="filterMovies()"
     />
 
-    <!-- Filter by Genre -->
-    <select [(ngModel)]="selectedGenre" (change)="filterMovies()">
-      <option value="">All</option>
-      <option *ngFor="let genre of genre" [value]="genre">{{ genre }}</option>
-    </select>
+    <div class="filter-options">
+      <select [(ngModel)]="selectedGenre" (change)="filterMovies()">
+        <option value="">All</option>
+        <option *ngFor="let g of genre" [value]="g">{{ g }}</option>
+      </select>
 
-    <!-- Sort by options -->
-    <select [(ngModel)]="sortOption" (change)="sortMovies()">
-      <option value="alphabetical">Alphabetical</option>
-      <option value="releaseDate">Release Date</option>
-    </select>
+      <select [(ngModel)]="sortOption" (change)="sortMovies()">
+        <option value="alphabetical">Alphabetical</option>
+        <option value="releaseDate">Release Date</option>
+        <option value="rating">Rating</option>
+      </select>
+    </div>
   </div>
 
-  <!-- Movie Cards -->
-  <div class="movies-grid">
+  <!-- Movie Grid -->
+  <div class="movie-grid">
     <div *ngFor="let movie of filteredMovies" class="movie-card">
-      <h3>{{ movie.title }}</h3>
-      <img [src]="movie.image || 'placeholder.jpg'" alt="{{ movie.title }}" />
-      <p>{{ movie.genre }}</p>
-      <p>Released: {{ movie.releaseDate | date }}</p>
-      <button [routerLink]="['/movie', movie._id]">View Details</button>
+      <div class="card-content">
+        <img
+          class="movie-poster"
+          [src]="
+            movie.image || getTMDbImage(movie.poster_path) || 'placeholder.jpg'
+          "
+          alt="{{ movie.title }}"
+        />
+        <h3 class="movie-title">{{ movie.title }}</h3>
+        <p class="movie-genre">{{ movie.genre || "N/A" }}</p>
+        <p class="movie-release">
+          Release: {{ movie.releaseDate || movie.release_date | date }}
+        </p>
+        <p *ngIf="movie.rating" class="movie-rating">
+          ★ {{ movie.rating.toFixed(1) }}/10
+        </p>
+        <button
+          class="details-btn"
+          [routerLink]="['/movie', movie._id || 'tmdb-' + movie.id]"
+        >
+          View Details
+        </button>
+      </div>
     </div>
+  </div>
+
+  <!-- No Results Placeholder -->
+  <div class="no-results" *ngIf="filteredMovies.length === 0">
+    <p>No movies found. Try a different search or filter.</p>
   </div>
 </div>
