@@ -1,5 +1,5 @@
 <div class="container-xxl mt-4 homePage">
-  <!-- Trending Movies -->
+  <!-- Trending Movies Section -->
   <div class="row justify-content-center">
     <div class="col-5" *ngFor="let movie of trendingMovies">
       <div
@@ -8,14 +8,15 @@
         style="height: 400px"
       >
         <img
-          src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+          [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
           class="rounded-5 card-img-top w-100 h-100 object-fit-fill"
           alt="{{ movie.title }}"
         />
       </div>
     </div>
   </div>
-  <!-- Genres -->
+
+  <!-- Genres Section -->
   <div class="row my-3 justify-content-center">
     <div
       class="col-md-4 h-25 text-center"
@@ -35,7 +36,7 @@
     </div>
   </div>
 
-  <!-- Other Movies -->
+  <!-- Movies by Genre Section -->
   <div class="movie-grid mb-3">
     <ng-container *ngIf="movies.length > 0; else noMovies">
       <div
@@ -61,11 +62,8 @@
           />
           <div class="card-body text-white">
             <h5 class="movie-title">{{ movie.title }}</h5>
-            <p class="movie-genre">Trending</p>
-            <button
-              class="details-btn"
-              [routerLink]="['/movie', movie._id || 'tmdb-' + movie.id]"
-            >
+            <p class="movie-genre">{{ movie.genre }}</p>
+            <button class="details-btn" [routerLink]="['/movie', movie._id]">
               View Details
             </button>
           </div>
@@ -73,7 +71,7 @@
       </div>
     </ng-container>
     <ng-template #noMovies>
-      <p class="text-center text-white">No trending movies available.</p>
+      <p class="text-center text-white">No movies available for this genre.</p>
     </ng-template>
   </div>
 </div>

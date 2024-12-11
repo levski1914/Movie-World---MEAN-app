@@ -2,31 +2,29 @@ const router = require("express").Router();
 const Favourite = require("../models/favouriteModel");
 const Movie = require("../models/movieModel");
 const authMiddleware = require("../middleware/authMiddleware");
+// const mongoose = require("mongoose");
+const { fetchTMDbMovieDetails } = require("./tmdbController");
 
 router.post("/favourites", authMiddleware, async (req, res) => {
-  try {
-    const { movieId } = req.body;
+  const { movieId } = req.body;
 
-    const existingFavourites = await Favourite.findOne({
-      user: req.user.id,
-      movie: movieId,
-    });
+  const existingFavourite = await Favourite.findOne({
+    user: req.user.id,
+    movie: movieId,
+  });
 
-    if (existingFavourites) {
-      return res.status(400).json({ message: "Movie already in favourites" });
-    }
-
-    const favourite = new Favourite({
-      user: req.user.id,
-      movie: movieId,
-    });
-
-    await favourite.save();
-
-    return res.status(201).json({ message: "Movie added successfully" });
-  } catch (err) {
-    res.status(500).json({ message: "Error adding to favourite", err });
+  if (existingFavourite) {
+    return res.status(400).json({ message: "Movie already in favourites" });
   }
+
+  // Добавете към любими само ако не съществува
+  const favourite = new Favourite({
+    user: req.user.id,
+    movie: movieId,
+  });
+
+  await favourite.save();
+  res.status(201).json({ message: "Movie added to favourites successfully" });
 });
 
 router.get("/favourites", authMiddleware, async (req, res) => {
@@ -39,12 +37,15 @@ router.get("/favourites", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Error fetching favourites.", error });
   }
 });
-
 router.delete("/favourites/:id", authMiddleware, async (req, res) => {
   try {
+    const movieId = req.params.id.startsWith("tmdb-")
+      ? req.params.id.replace("tmdb-", "")
+      : req.params.id;
+
     const favourite = await Favourite.findOneAndDelete({
       user: req.user.id,
-      movie: req.params.id,
+      movie: movieId,
     });
 
     if (!favourite) {
@@ -58,26 +59,44 @@ router.delete("/favourites/:id", authMiddleware, async (req, res) => {
 });
 
 router.post("/", authMiddleware, async (req, res) => {
-  const { title, genre, desc, image, releaseDate } = req.body;
-
   try {
-    const newMovie = new Movie({
-      title,
-      desc,
-      genre,
-      releaseDate,
-      image,
-      createdBy: req.user.id,
-    });
+    const { tmdbId } = req.body;
 
-    const savedMovie = await newMovie.save();
+    if (!tmdbId) {
+      return res.status(400).json({ message: "TMDb ID is required" });
+    }
 
-    return res.status(201).json(savedMovie);
+    let movieRecord = await Movie.findOne({ tmdbId });
+    if (!movieRecord) {
+      const tmdbData = await fetchTMDbMovieDetails(tmdbId);
+      if (!tmdbData || !tmdbData.title || !tmdbData.poster_path) {
+        return res.status(500).json({ message: "Invalid TMDb data" });
+      }
+
+      const genres = tmdbData.genres.map((g) => g.name).join(", ");
+
+      movieRecord = new Movie({
+        title: tmdbData.title,
+        desc: tmdbData.overview || "No description available",
+        genre: genres || "Unknown",
+        releaseDate: tmdbData.release_date || "Unknown",
+        image: `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`,
+        rating: tmdbData.vote_average || 0,
+        tmdbId: tmdbId,
+        createdBy: req.user.id,
+      });
+
+      await movieRecord.save();
+    }
+
+    res.status(201).json(movieRecord);
   } catch (error) {
-    res.status(500).json({ message: "Error creating movie", error });
+    console.error("Error creating movie from TMDb:", error);
+    res
+      .status(500)
+      .json({ message: "Failed to create movie from TMDb", error });
   }
 });
-
 router.get("/my-movies", authMiddleware, async (req, res) => {
   try {
     const movies = await Movie.find({ createdBy: req.user.id });
@@ -88,11 +107,38 @@ router.get("/my-movies", authMiddleware, async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
+  const { source } = req.query;
+
   try {
-    const movies = await Movie.find();
+    let movies;
+    if (source === "database") {
+      movies = await Movie.find({ tmdbId: { $exists: false } }); // Само локални филми
+    } else {
+      movies = await Movie.find();
+    }
+
     res.status(200).json(movies);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching movies", error });
+    console.error("Error fetching movies:", error);
+    res.status(500).json({ message: "Error fetching movies" });
+  }
+});
+router.get("/movies", async (req, res) => {
+  const genre = req.query.genre;
+
+  try {
+    let movies = await Movie.find(); // Извлича всички филми
+
+    if (genre) {
+      // Филтрира филмите според жанра
+      movies = movies.filter((movie) =>
+        movie.genre.toLowerCase().includes(genre.toLowerCase())
+      );
+    }
+
+    res.json(movies);
+  } catch (err) {
+    res.status(500).send({ error: "Failed to fetch movies" });
   }
 });
 
@@ -179,10 +225,14 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: "Error fetching movie details", error });
   }
 });
-router.post("/:id/rate", async (req, res) => {
-  const { rating, userId, guestId } = req.body;
 
-  console.log("Received data:", { userId, guestId, rating });
+router.post("/:id/rate", authMiddleware, async (req, res) => {
+  const { rating, userId, guestId } = req.body;
+  const movieId = req.params.id;
+
+  if (!movieId || movieId === "undefined") {
+    return res.status(400).json({ message: "Movie ID is required." });
+  }
 
   if (!rating || (!userId && !guestId)) {
     return res
@@ -191,21 +241,57 @@ router.post("/:id/rate", async (req, res) => {
   }
 
   try {
-    const movie = await Movie.findById(req.params.id);
+    let movie;
+
+    // Проверка за TMDb филм
+    if (movieId.startsWith("tmdb-")) {
+      const tmdbId = movieId.replace("tmdb-", "");
+
+      // Опитваме се да намерим филма в базата
+      movie = await Movie.findOne({ tmdbId });
+
+      if (!movie) {
+        // Ако филмът не съществува, извличаме данни от TMDb API
+        const response = await axios.get(`${TMDB_BASE_URL}/movie/${tmdbId}`, {
+          params: { api_key: TMDB_API_KEY },
+        });
+
+        const tmdbData = response.data;
+
+        // Създаваме нов запис за филма в базата
+        movie = new Movie({
+          title: tmdbData.title,
+          desc: tmdbData.overview || "No description available",
+          genre: tmdbData.genres.map((g) => g.name).join(", ") || "Unknown",
+          releaseDate: tmdbData.release_date || "Unknown",
+          image: `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`,
+          tmdbId: tmdbId,
+          createdBy: null,
+        });
+
+        await movie.save();
+      }
+    } else {
+      // За локални филми директно намираме по ID
+      movie = await Movie.findById(movieId);
+    }
+
     if (!movie) {
       return res.status(404).json({ message: "Movie not found" });
     }
 
+    // Добавяне или актуализация на рейтинга
     const existingRating = movie.ratings.find(
       (r) => r.userId?.toString() === userId || r.guestId === guestId
     );
 
     if (existingRating) {
-      existingRating.rating = rating;
+      existingRating.rating = rating; // Актуализация
     } else {
-      movie.ratings.push({ userId, guestId, rating });
+      movie.ratings.push({ userId, guestId, rating }); // Нов рейтинг
     }
 
+    // Актуализиране на средния рейтинг
     movie.rating =
       movie.ratings.reduce((sum, r) => sum + r.rating, 0) /
       movie.ratings.length;
@@ -222,6 +308,7 @@ router.post("/:id/rate", async (req, res) => {
     res.status(500).json({ message: "Error updating rating", error });
   }
 });
+
 router.get("/genre/:genre", async (req, res) => {
   try {
     const genre = req.params.genre;

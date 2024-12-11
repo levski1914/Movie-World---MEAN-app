@@ -15,8 +15,9 @@ export class MovieDetailsComponent implements OnInit {
   userRating: number = 0;
   averageRating: number = 0;
   totalRatings: number = 0;
+  tmdbRating: number = 0;
+  tmdbVotes: number = 0;
   isBrowser: boolean = false;
-
   constructor(
     private route: ActivatedRoute,
     private movieService: MovieService,
@@ -27,65 +28,41 @@ export class MovieDetailsComponent implements OnInit {
     this.isBrowser = isPlatformBrowser(this.platformId);
 
     if (this.isBrowser) {
-      if (!localStorage.getItem('guestId')) {
-        localStorage.setItem('guestId', this.generateGuestId());
+      const guestId = this.getFromLocalStorage('guestId');
+      if (!guestId) {
+        this.setToLocalStorage('guestId', this.generateGuestId());
       }
     }
 
     const movieId = this.route.snapshot.paramMap.get('id');
-    if (movieId) {
-      if (this.isTMDbId(movieId)) {
-        this.loadTMDbMovieDetails(movieId.replace('tmdb-', ''));
-      } else {
-        this.loadMovieDetails(movieId);
-      }
+    if (!movieId) {
+      console.error('Movie ID is missing in the route.');
+      return;
+    }
+
+    if (this.isTMDbId(movieId)) {
+      this.loadTMDbMovieDetails(movieId.replace('tmdb-', ''));
+    } else {
+      this.loadMovieDetails(movieId);
+    }
+  }
+
+  private getFromLocalStorage(key: string): string | null {
+    if (this.isBrowser) {
+      return localStorage.getItem(key);
+    }
+    return null; // Върни null, ако не сме в браузърна среда
+  }
+
+  private setToLocalStorage(key: string, value: string): void {
+    if (this.isBrowser) {
+      localStorage.setItem(key, value);
     }
   }
 
   generateGuestId(): string {
     return 'guest-' + Math.random().toString(36).substr(2, 9);
   }
-
-  isTMDbId(id: string): boolean {
-    return id.startsWith('tmdb-');
-  }
-
-  loadMovieDetails(movieId: string): void {
-    this.movieService.getMoviesById(movieId).subscribe(
-      (response) => {
-        if (response) {
-          this.movie = response;
-          this.averageRating = response.rating || 0;
-          this.totalRatings = response.ratings?.length || 0;
-
-          if (this.isBrowser) {
-            const userId = localStorage.getItem('userId');
-            const guestId = localStorage.getItem('guestId');
-            const userRating = response.ratings.find(
-              (rating: any) =>
-                rating.userId === userId || rating.guestId === guestId
-            );
-            this.userRating = userRating ? userRating.rating : 0;
-          }
-        }
-      },
-      (error) => {
-        console.error('Error fetching movie details:', error);
-      }
-    );
-  }
-
-  loadTMDbMovieDetails(tmdbId: string): void {
-    this.movieService.getTMDbMovieDetails(tmdbId).subscribe(
-      (response) => {
-        this.movie = response;
-      },
-      (error) => {
-        console.error('Error fetching TMDb movie details:', error);
-      }
-    );
-  }
-
   getTMDbImage(path: string | null): string | null {
     return path ? `https://image.tmdb.org/t/p/w500${path}` : null;
   }
@@ -103,47 +80,140 @@ export class MovieDetailsComponent implements OnInit {
     return !!movie.id && typeof movie.id === 'number';
   }
 
-  rateMovie(rating: number): void {
-    if (this.isTMDbMovie(this.movie)) {
-      alert(`Rating for TMDb movies is stored locally.`);
-      // Съхранявайте рейтинга локално или изпращайте на бекенда, ако желаете
-      this.userRating = rating;
-      return;
-    }
-
-    const userId = localStorage.getItem('userId'); // ID на потребителя (ако е логнат)
-    const guestId = localStorage.getItem('guestId'); // ID на госта
-
-    if (!userId && !guestId) {
-      alert('Error: No valid user or guest ID found.');
-      return;
-    }
-
-    console.log('Sending data:', {
-      movieId: this.movie._id,
-      rating,
-      userId: userId || null,
-      guestId: guestId || null,
-    });
-
-    this.movieService
-      .rateMovie(this.movie._id, rating, userId, guestId)
-      .subscribe(
-        (response) => {
-          this.averageRating = response.averageRating;
-          this.userRating = rating;
-          this.totalRatings = response.totalRatings;
-          alert('Your rating has been updated!');
-        },
-        (error) => {
-          console.error('Error rating movie:', error);
-        }
-      );
+  isTMDbId(id: string): boolean {
+    return id.startsWith('tmdb-');
   }
-  addToFavourites(movieId: string): void {
+
+  loadTMDbMovieDetails(tmdbId: string): void {
+    // Извличане на филма от TMDb API
+    this.movieService.getTMDbMovieDetails(tmdbId).subscribe(
+      (response) => {
+        if (!response || !response.title) {
+          console.error('Invalid TMDb response');
+          this.movie = {
+            title: 'Unknown Title',
+            desc: 'No description available',
+            genre: 'Unknown',
+            releaseDate: 'Unknown',
+            image: 'default-image.jpg',
+          };
+          return;
+        }
+
+        // Подготовка на данните за създаване на филм
+        const movieData = {
+          title: response.title,
+          desc: response.overview || 'No description available',
+          genre:
+            response.genres?.map((g: any) => g.name).join(', ') || 'Unknown',
+          releaseDate: response.release_date || 'Unknown',
+          image: response.poster_path
+            ? `https://image.tmdb.org/t/p/w500${response.poster_path}`
+            : 'default-image.jpg',
+          tmdbId: tmdbId,
+        };
+
+        // Задаване на временни данни за показване
+        this.movie = movieData;
+        this.tmdbRating = response.vote_average || 0;
+        this.tmdbVotes = response.vote_count || 0;
+
+        // Създаване на филма в базата данни
+        this.movieService.createMovie(movieData).subscribe(
+          (createdMovie) => {
+            if (createdMovie && createdMovie._id) {
+              // Задаване на ID на създадения филм
+              this.movie._id = createdMovie._id;
+            }
+          },
+          (error) => {
+            console.error('Error creating movie in DB:', error);
+          }
+        );
+      },
+      (error) => {
+        console.error('Error fetching TMDb movie details:', error);
+        // Задаване на стойности, ако заявката е неуспешна
+        this.movie = {
+          title: 'Unknown Title',
+          desc: 'No description available',
+          genre: 'Unknown',
+          releaseDate: 'Unknown',
+          image: 'default-image.jpg',
+        };
+      }
+    );
+  }
+
+  loadMovieDetails(movieId: string): void {
+    this.movieService.getMoviesById(movieId).subscribe(
+      (response) => {
+        if (response) {
+          this.movie = response;
+          this.averageRating = response.rating || 0;
+          this.totalRatings = response.ratings?.length || 0;
+
+          const userId = this.getFromLocalStorage('userId');
+          const guestId = this.getFromLocalStorage('guestId');
+          const userRating = response.ratings.find(
+            (rating: any) =>
+              rating.userId === userId || rating.guestId === guestId
+          );
+          this.userRating = userRating ? userRating.rating : 0; // Задаваме локалния рейтинг
+        }
+      },
+      (error) => {
+        console.error('Error fetching movie details:', error);
+      }
+    );
+  }
+  toggleFavourite(movieId: string): void {
+    if (!this.isBrowser) return;
     this.movieService.addFavourite(movieId).subscribe(
       () => alert('Movie added to favourites!'),
-      (err) => console.error('Error adding to favourites', err)
+      (err) => {
+        if (err.status === 400) {
+          this.movieService.removeFavourite(movieId).subscribe(
+            () => alert('Movie removed from favourites!'),
+            (removeErr) =>
+              console.error('Error removing from favourites', removeErr)
+          );
+        } else {
+          console.error('Error adding to favourites', err);
+        }
+      }
+    );
+  }
+
+  rateMovie(rating: number): void {
+    if (!this.movie) {
+      console.error('Movie object is undefined.');
+      return;
+    }
+
+    // Използване на правилния идентификатор
+    const movieId = this.isTMDbMovie(this.movie)
+      ? `tmdb-${this.movie.id}` // За TMDb филми
+      : this.movie._id; // За локални филми
+
+    if (!movieId) {
+      console.error('Cannot rate movie: movie ID is undefined.');
+      return;
+    }
+
+    const userId = this.getFromLocalStorage('userId');
+    const guestId = this.getFromLocalStorage('guestId');
+
+    this.movieService.rateMovie(movieId, rating, userId, guestId).subscribe(
+      (response) => {
+        this.averageRating = response.averageRating;
+        this.totalRatings = response.totalRatings;
+        this.userRating = rating;
+        console.log('Rating updated successfully.');
+      },
+      (error) => {
+        console.error('Error updating rating:', error);
+      }
     );
   }
 }

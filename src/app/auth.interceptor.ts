@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 import { AuthService } from './services/auth.service';
 
 @Injectable({
-  providedIn: 'root', // Добавя Interceptor като част от standalone подхода
+  providedIn: 'root',
 })
 export class AuthInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService, private router: Router) {}
@@ -25,12 +25,11 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
-          // Ако токенът е изтекъл
-          this.authService.logout(); // Логаут на потребителя
+          this.authService.logout();
 
-          this.router.navigate(['/login']); // Пренасочване към страницата за вход
+          this.router.navigate(['/login']);
         }
-        return throwError(() => error); // Връщане на грешката
+        return throwError(() => error);
       })
     );
   }

@@ -27,8 +27,9 @@ export class AppComponent {
   }
 
   ngOnInit(): void {
-    // Инициализиране на състоянието на потребителя при стартиране на приложението
     this.authService.initializeAuthState();
+    this.isLoggedIn = this.authService.isLoggedIn();
+    this.username = this.authService.getUsername();
   }
   onToggle() {
     this.toggleStyle = !this.toggleStyle;

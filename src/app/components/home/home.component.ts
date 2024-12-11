@@ -9,14 +9,13 @@ import { MovieService } from '../../services/movie.service';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
   trendingMovies: any[] = [];
-  selectedGenre: string = 'Trending';
+  selectedGenre: string = 'Action'; // По подразбиране първи жанр
   movies: any[] = [];
   genres = [
-    { id: '1', genre: 'Trending' },
     { id: '2', genre: 'Action' },
     { id: '3', genre: 'Horror' },
     { id: '4', genre: 'Romance' },
@@ -28,40 +27,36 @@ export class HomeComponent implements OnInit {
   constructor(private movieService: MovieService) {}
 
   ngOnInit(): void {
-    this.loadTrendingMovies();
-    this.loadMovies(this.selectedGenre);
+    this.loadTrendingMovies(); // Зарежда само горната секция с трендинг филми
+    this.loadMovies(this.selectedGenre); // Зарежда филми по жанр
   }
+
   loadMovies(genre: string): void {
     this.selectedGenre = genre;
 
-    if (genre === 'Trending') {
-      // Ако е избран трендинг, зареждаме трендинг филмите
-      this.loadTrendingMovies();
-    } else {
-      // Зареждане на филми по жанр
-      this.movieService.getMoviesByGenre(genre).subscribe(
-        (movies) => {
-          this.movies = movies;
-        },
-        (error) => {
-          console.error('Error loading movies:', error);
-        }
-      );
-    }
+    this.movieService.getMoviesByGenre(genre).subscribe(
+      (movies) => {
+        // Проверява дали `movies` съдържа правилния жанр
+        this.movies = movies.filter((movie) =>
+          movie.genre?.toLowerCase().includes(genre.toLowerCase())
+        );
+      },
+      (error) => {
+        console.error('Error loading movies:', error);
+      }
+    );
   }
 
   loadTrendingMovies(): void {
     this.movieService.getTrendingMovies().subscribe(
       (data) => {
-        // Първите 2 трендинг филма за горната част
+        // Само горната секция (първите два трендинг филма)
         this.trendingMovies = data.results.slice(0, 2);
-
-        // Първите 6 трендинг филма за секцията "Other Movies"
-        this.movies = data.results.slice(0, 5);
       },
       (err) => console.log('Error fetching trending movies: ', err)
     );
   }
+
   applyBoxShadow(image: HTMLImageElement, movie: any): void {
     const colorThief = new ColorThief();
 

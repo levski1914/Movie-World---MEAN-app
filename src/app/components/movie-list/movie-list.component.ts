@@ -3,12 +3,13 @@ import { MovieService } from '../../services/movie.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-movie-list',
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './movie-list.component.html',
-  styleUrl: './movie-list.component.scss',
+  styleUrls: ['./movie-list.component.scss'],
 })
 export class MovieListComponent implements OnInit {
   movies: any[] = [];
@@ -25,21 +26,13 @@ export class MovieListComponent implements OnInit {
     this.loadMovies();
     this.loadGenres();
   }
-  getTMDbImage(path: string | null): string {
-    return path ? `https://image.tmdb.org/t/p/w500${path}` : 'placeholder.jpg';
-  }
+
   loadMovies(): void {
     this.movieService.getMovies().subscribe(
       (localMovies) => {
-        this.movieService.getTrendingMovies().subscribe(
-          (tmdbMovies) => {
-            const combinedMovies = [...localMovies, ...tmdbMovies.results];
-            this.movies = combinedMovies;
-            this.filteredMovies = [...this.movies];
-            this.loadGenres();
-          },
-          (error) => console.error('Error loading TMDb movies:', error)
-        );
+        this.movies = localMovies;
+        this.filteredMovies = [...this.movies];
+        this.loadGenres();
       },
       (error) => console.error('Error loading local movies:', error)
     );
@@ -73,6 +66,7 @@ export class MovieListComponent implements OnInit {
     });
     this.filterMovies();
   }
+
   filterMovies(): void {
     this.filteredMovies = this.movies.filter((movie) => {
       const matchesTitle = movie.title
@@ -99,5 +93,9 @@ export class MovieListComponent implements OnInit {
     } else if (this.sortOption === 'rating') {
       this.filteredMovies.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     }
+  }
+
+  getTMDbImage(path: string | null): string {
+    return path ? `https://image.tmdb.org/t/p/w500${path}` : 'placeholder.jpg';
   }
 }

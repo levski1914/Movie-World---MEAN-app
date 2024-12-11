@@ -50,6 +50,13 @@ export class AuthService {
   }
 
   initializeAuthState(): void {
+    if (this.isLocalStorageAvailable()) {
+      const authToken = localStorage.getItem('authToken');
+      const username = localStorage.getItem('username');
+
+      this.isLoggedInSubject.next(!!authToken); // Синхронизация на логин състоянието
+      this.usernameSubject.next(username); // Синхронизация на потребителското име
+    }
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
@@ -71,14 +78,8 @@ export class AuthService {
       tap((response: any) => {
         if (response.token) {
           this.saveToken(response.token);
-          localStorage.setItem('userId', response.userId);
-          localStorage.removeItem('guestId');
-        } else {
-          localStorage.removeItem('userId');
-          localStorage.removeItem('guestId');
-        }
-        if (response.username) {
-          this.saveUsername(response.username);
+          this.isLoggedInSubject.next(true); // Промяна тук
+          this.usernameSubject.next(response.username); // Промяна тук
         }
       }),
       catchError((error) => {
@@ -108,10 +109,18 @@ export class AuthService {
   saveToken(token: string): void {
     if (this.isLocalStorageAvailable()) {
       localStorage.setItem('authToken', token);
+      console.log('Token saved:', token);
       this.isLoggedInSubject.next(true);
     }
   }
 
+  getToken(): string | null {
+    const token = this.isLocalStorageAvailable()
+      ? localStorage.getItem('authToken')
+      : null;
+    // console.log('Token fetched:', token);
+    return token;
+  }
   saveUsername(username: string): void {
     if (this.isLocalStorageAvailable()) {
       localStorage.setItem('username', username);
@@ -133,12 +142,6 @@ export class AuthService {
 
   getUsername(): string | null {
     return this.usernameSubject.value;
-  }
-
-  getToken(): string | null {
-    return this.isLocalStorageAvailable()
-      ? localStorage.getItem('authToken')
-      : null;
   }
 
   getUserProfile(): Observable<any> {

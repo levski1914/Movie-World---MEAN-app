@@ -20,18 +20,11 @@
         <strong>Description:</strong>
         {{ movie.desc || movie.overview || "No description available." }}
       </p>
-      <p *ngIf="isTMDbMovie(movie)" class="d-flex gap-2 align-items-center">
-        <img
-          src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg"
-          alt=""
-          style="width: 100px"
-        />
-        {{ movie.vote_average.toFixed(1) || "N/A" }} ({{
-          movie.vote_count || 0
-        }}
-        votes)
+      <p *ngIf="tmdbRating > 0">
+        <strong>TMDb Rating:</strong>
+        {{ tmdbRating.toFixed(1) || "N/A" }} ({{ tmdbVotes || 0 }} votes)
       </p>
-      <p *ngIf="!isTMDbMovie(movie)">
+      <p *ngIf="totalRatings > 0">
         <strong>Average Rating:</strong>
         {{ averageRating.toFixed(1) || "N/A" }} ({{ totalRatings || 0 }}
         ratings)
@@ -49,6 +42,14 @@
         ★
       </span>
     </div>
+  </div>
+  <div class="favourites-section">
+    <button
+      class="btn btn-warning"
+      (click)="toggleFavourite(movie._id || 'tmdb-' + movie.id)"
+    >
+      Add to Favourites
+    </button>
   </div>
 </div>
 

@@ -61,5 +61,26 @@ router.get("/proxy/genres", async (req, res) => {
     res.status(500).json({ message: "Error fetching genres", error });
   }
 });
+router.get("/proxy/search", async (req, res) => {
+  try {
+    const query = req.query.query;
 
+    if (!query) {
+      return res.status(400).json({ message: "Query parameter is required" });
+    }
+
+    const response = await axios.get(
+      `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
+        query
+      )}`
+    );
+
+    res.status(200).json(response.data.results);
+  } catch (error) {
+    console.error("Error fetching search results from TMDb:", error);
+    res
+      .status(500)
+      .json({ message: "Failed to fetch search results from TMDb", error });
+  }
+});
 module.exports = router;

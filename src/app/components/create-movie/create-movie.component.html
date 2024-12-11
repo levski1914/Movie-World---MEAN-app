@@ -1,32 +1,67 @@
-<div class="movie-form">
+<div class="movie-form-container modern">
   <h2>Create New Movie</h2>
   <form [formGroup]="movieForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label>Title:</label>
-      <input class="form-control" formControlName="title" />
+    <div class="form-field">
+      <label for="title">Title:</label>
+      <input
+        id="title"
+        type="text"
+        formControlName="title"
+        placeholder="Enter movie title"
+      />
+      <ul *ngIf="suggestions$ | async as suggestions" class="suggestions">
+        <li
+          *ngFor="let suggestion of suggestions"
+          (click)="selectMovie(suggestion)"
+        >
+          <img
+            [src]="
+              suggestion.poster_path
+                ? 'https://image.tmdb.org/t/p/w92' + suggestion.poster_path
+                : 'default-image.jpg'
+            "
+            alt="{{ suggestion.title }}"
+          />
+          <span>{{ suggestion.title }}</span>
+        </li>
+      </ul>
     </div>
 
-    <div class="form-group">
-      <label>Description:</label>
-      <textarea class="form-control" formControlName="desc"></textarea>
+    <div class="form-field">
+      <label for="desc">Description:</label>
+      <textarea
+        id="desc"
+        formControlName="desc"
+        placeholder="Movie description"
+      ></textarea>
     </div>
 
-    <div class="form-group">
-      <label>Genre:</label>
-      <input class="form-control" formControlName="genre" />
+    <div class="form-field">
+      <label for="genre">Genre:</label>
+      <input
+        id="genre"
+        type="text"
+        formControlName="genre"
+        placeholder="Genres will appear here"
+      />
     </div>
 
-    <div class="form-group">
-      <label>Release Date:</label>
-      <input class="form-control" type="date" formControlName="releaseDate" />
+    <div class="form-field">
+      <label for="releaseDate">Release Date:</label>
+      <input id="releaseDate" type="date" formControlName="releaseDate" />
     </div>
 
-    <div class="form-group">
-      <label>Image Url:</label>
-      <input class="form-control" type="url" formControlName="image" />
+    <div class="form-field">
+      <label for="image">Image URL:</label>
+      <input
+        id="image"
+        type="url"
+        formControlName="image"
+        placeholder="Paste image URL here"
+      />
     </div>
 
-    <button class="btn btn-primary" type="submit" [disabled]="!movieForm.valid">
+    <button type="submit" [disabled]="!movieForm.valid" class="btn">
       Create Movie
     </button>
   </form>
