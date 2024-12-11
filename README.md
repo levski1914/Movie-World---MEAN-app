@@ -82,3 +82,58 @@ npm install
 ```bash
 ng serve
 ```
+
+## API Endpoints
+
+Below is a detailed list of the API endpoints provided by the backend.
+
+---
+
+### Authentication
+
+| Method | Endpoint         | Description                                                      |
+| ------ | ---------------- | ---------------------------------------------------------------- |
+| POST   | `/auth/register` | Register a new user.                                             |
+| POST   | `/auth/login`    | Log in an existing user.                                         |
+| GET    | `/auth/profile`  | Fetch the profile of the logged-in user. Requires a valid token. |
+
+---
+
+### Movies
+
+| Method | Endpoint                  | Description                                                |
+| ------ | ------------------------- | ---------------------------------------------------------- |
+| GET    | `/movies`                 | Retrieve all movies.                                       |
+| GET    | `/movies?source=database` | Fetch only movies stored in the local database.            |
+| POST   | `/movies`                 | Add a new movie. Requires authentication.                  |
+| PUT    | `/movies/:id`             | Edit an existing movie by its ID. Requires authentication. |
+| DELETE | `/movies/:id`             | Delete a movie by its ID. Requires authentication.         |
+| GET    | `/movies/genre/:genre`    | Get movies filtered by a specific genre.                   |
+
+---
+
+### Favorites
+
+| Method | Endpoint          | Description                                                               |
+| ------ | ----------------- | ------------------------------------------------------------------------- |
+| GET    | `/favourites`     | Fetch all favorite movies of the logged-in user. Requires authentication. |
+| POST   | `/favourites`     | Add a movie to the user's favorites. Requires authentication.             |
+| DELETE | `/favourites/:id` | Remove a movie from the user's favorites. Requires authentication.        |
+
+---
+
+### Ratings
+
+| Method | Endpoint           | Description                                                           |
+| ------ | ------------------ | --------------------------------------------------------------------- |
+| POST   | `/movies/:id/rate` | Add or update a rating for a specific movie. Requires authentication. |
+
+---
+
+### TMDb Movie Integration
+
+| Method | Endpoint  | Description                                                                                                                                    |
+| ------ | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| POST   | `/movies` | Create a new movie by providing a TMDb ID. If the movie does not exist in the database, it will fetch data from TMDb. Requires authentication. |
+
+---
