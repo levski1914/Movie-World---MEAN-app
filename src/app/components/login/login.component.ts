@@ -6,18 +6,19 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink, ReactiveFormsModule, CommonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   loginForm: FormGroup;
-
+  errorMessage: string | null = null;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -33,7 +34,7 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value).subscribe(
         (response) => {
-          console.log('Login successfully: ', response);
+          console.log('Login successful: ', response);
           this.authService.saveToken(response.token);
           if (response.username) {
             this.authService.saveUsername(response.username);
@@ -41,10 +42,13 @@ export class LoginComponent {
           this.router.navigate(['/home']);
         },
         (error) => {
-          console.log('Login failed: ', error);
-          alert('wrong email or password');
+          console.error('Login failed: ', error);
+          this.errorMessage =
+            error.error?.message || 'Invalid email or password';
         }
       );
+    } else {
+      this.errorMessage = 'Invalid email or password'; // Добавяме съобщение за невалиден формуляр
     }
   }
 }
