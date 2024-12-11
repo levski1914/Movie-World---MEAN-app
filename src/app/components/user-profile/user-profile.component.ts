@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MovieService } from '../../services/movie.service';
 import { AuthService } from '../../services/auth.service';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-user-profile',
   standalone: true,
@@ -20,7 +20,8 @@ export class UserProfileComponent implements OnInit {
 
   constructor(
     private movieService: MovieService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -77,7 +78,9 @@ export class UserProfileComponent implements OnInit {
     );
   }
 
-  onEdit(movieId: string): void {}
+  onEdit(movieId: string): void {
+    this.router.navigate(['/edit-movie', movieId]);
+  }
 
   onDelete(movieId: string): void {
     if (confirm('Are you sure you want to delete this movie?')) {

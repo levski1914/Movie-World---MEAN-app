@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-// import { faAdressCard } from '@fortawesome/free-solid-svg-icons';
-
-// import { faCoffee } from ;
 
 import {
   ReactiveFormsModule,
@@ -24,7 +21,7 @@ import { Router } from '@angular/router';
 })
 export class RegisterComponent {
   registerForm: FormGroup;
-  // faCoffee = this.faCoffee;
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -46,7 +43,6 @@ export class RegisterComponent {
         (response) => {
           console.log('Registration successful!', response);
 
-          // Auto-login after successful registration
           this.authService.login({ email, password }).subscribe(
             (loginResponse) => {
               console.log('Auto-login successful!', loginResponse);

@@ -2,7 +2,7 @@ const router = require("express").Router();
 const Favourite = require("../models/favouriteModel");
 const Movie = require("../models/movieModel");
 const authMiddleware = require("../middleware/authMiddleware");
-// const mongoose = require("mongoose");
+
 const { fetchTMDbMovieDetails } = require("./tmdbController");
 
 router.post("/favourites", authMiddleware, async (req, res) => {
@@ -17,7 +17,6 @@ router.post("/favourites", authMiddleware, async (req, res) => {
     return res.status(400).json({ message: "Movie already in favourites" });
   }
 
-  // Добавете към любими само ако не съществува
   const favourite = new Favourite({
     user: req.user.id,
     movie: movieId,
@@ -112,7 +111,7 @@ router.get("/", async (req, res) => {
   try {
     let movies;
     if (source === "database") {
-      movies = await Movie.find({ tmdbId: { $exists: false } }); // Само локални филми
+      movies = await Movie.find({ tmdbId: { $exists: false } });
     } else {
       movies = await Movie.find();
     }
@@ -127,10 +126,9 @@ router.get("/movies", async (req, res) => {
   const genre = req.query.genre;
 
   try {
-    let movies = await Movie.find(); // Извлича всички филми
+    let movies = await Movie.find();
 
     if (genre) {
-      // Филтрира филмите според жанра
       movies = movies.filter((movie) =>
         movie.genre.toLowerCase().includes(genre.toLowerCase())
       );
@@ -243,22 +241,18 @@ router.post("/:id/rate", authMiddleware, async (req, res) => {
   try {
     let movie;
 
-    // Проверка за TMDb филм
     if (movieId.startsWith("tmdb-")) {
       const tmdbId = movieId.replace("tmdb-", "");
 
-      // Опитваме се да намерим филма в базата
       movie = await Movie.findOne({ tmdbId });
 
       if (!movie) {
-        // Ако филмът не съществува, извличаме данни от TMDb API
         const response = await axios.get(`${TMDB_BASE_URL}/movie/${tmdbId}`, {
           params: { api_key: TMDB_API_KEY },
         });
 
         const tmdbData = response.data;
 
-        // Създаваме нов запис за филма в базата
         movie = new Movie({
           title: tmdbData.title,
           desc: tmdbData.overview || "No description available",
@@ -272,7 +266,6 @@ router.post("/:id/rate", authMiddleware, async (req, res) => {
         await movie.save();
       }
     } else {
-      // За локални филми директно намираме по ID
       movie = await Movie.findById(movieId);
     }
 
@@ -280,18 +273,16 @@ router.post("/:id/rate", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "Movie not found" });
     }
 
-    // Добавяне или актуализация на рейтинга
     const existingRating = movie.ratings.find(
       (r) => r.userId?.toString() === userId || r.guestId === guestId
     );
 
     if (existingRating) {
-      existingRating.rating = rating; // Актуализация
+      existingRating.rating = rating;
     } else {
-      movie.ratings.push({ userId, guestId, rating }); // Нов рейтинг
+      movie.ratings.push({ userId, guestId, rating });
     }
 
-    // Актуализиране на средния рейтинг
     movie.rating =
       movie.ratings.reduce((sum, r) => sum + r.rating, 0) /
       movie.ratings.length;

@@ -54,8 +54,8 @@ export class AuthService {
       const authToken = localStorage.getItem('authToken');
       const username = localStorage.getItem('username');
 
-      this.isLoggedInSubject.next(!!authToken); // Синхронизация на логин състоянието
-      this.usernameSubject.next(username); // Синхронизация на потребителското име
+      this.isLoggedInSubject.next(!!authToken);
+      this.usernameSubject.next(username);
     }
     if (!isPlatformBrowser(this.platformId)) {
       return;
@@ -78,8 +78,8 @@ export class AuthService {
       tap((response: any) => {
         if (response.token) {
           this.saveToken(response.token);
-          this.isLoggedInSubject.next(true); // Промяна тук
-          this.usernameSubject.next(response.username); // Промяна тук
+          this.isLoggedInSubject.next(true);
+          this.usernameSubject.next(response.username);
         }
       }),
       catchError((error) => {
@@ -118,7 +118,7 @@ export class AuthService {
     const token = this.isLocalStorageAvailable()
       ? localStorage.getItem('authToken')
       : null;
-    // console.log('Token fetched:', token);
+
     return token;
   }
   saveUsername(username: string): void {

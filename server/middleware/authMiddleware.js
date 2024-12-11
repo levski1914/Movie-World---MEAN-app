@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
-  const token = req.header("Authorization")?.split(" ")[1]; // Bearer token
+  const token = req.header("Authorization")?.split(" ")[1];
   if (!token) {
     return res
       .status(401)
@@ -10,7 +10,7 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const verified = jwt.verify(token, process.env.SECRET);
-    // console.log("Decoded token:", verified); // Провери какво се декодира тук
+
     req.user = verified;
     next();
   } catch (error) {

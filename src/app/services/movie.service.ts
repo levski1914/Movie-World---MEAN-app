@@ -50,9 +50,11 @@ export class MovieService {
     console.log('Headers for createMovie:', headers.get('Authorization'));
     return this.http.post<any>(this.apiURL, movie, { headers });
   }
-  updateMovie(id: string, movie: any): Observable<any> {
+  updateMovie(movieId: string, updatedMovie: any): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.put<any>(`${this.apiURL}/${id}`, movie, { headers });
+    return this.http.put(`${this.apiURL}/${movieId}`, updatedMovie, {
+      headers,
+    });
   }
 
   deleteMovie(id: string): Observable<any> {
@@ -155,7 +157,7 @@ export class MovieService {
     return this.authService.getUsername() || '';
   }
   getTrendingMovies(): Observable<any> {
-    const url = 'http://localhost:5000/api/proxy/trending'; // Прокси маршрут
+    const url = 'http://localhost:5000/api/proxy/trending';
     return this.http.get<any>(url).pipe(
       tap((data: any) => {
         if (!data || !data.results) {

@@ -51,7 +51,7 @@ export class MovieDetailsComponent implements OnInit {
     if (this.isBrowser) {
       return localStorage.getItem(key);
     }
-    return null; // Върни null, ако не сме в браузърна среда
+    return null;
   }
 
   private setToLocalStorage(key: string, value: string): void {
@@ -85,7 +85,6 @@ export class MovieDetailsComponent implements OnInit {
   }
 
   loadTMDbMovieDetails(tmdbId: string): void {
-    // Извличане на филма от TMDb API
     this.movieService.getTMDbMovieDetails(tmdbId).subscribe(
       (response) => {
         if (!response || !response.title) {
@@ -100,7 +99,6 @@ export class MovieDetailsComponent implements OnInit {
           return;
         }
 
-        // Подготовка на данните за създаване на филм
         const movieData = {
           title: response.title,
           desc: response.overview || 'No description available',
@@ -113,16 +111,13 @@ export class MovieDetailsComponent implements OnInit {
           tmdbId: tmdbId,
         };
 
-        // Задаване на временни данни за показване
         this.movie = movieData;
         this.tmdbRating = response.vote_average || 0;
         this.tmdbVotes = response.vote_count || 0;
 
-        // Създаване на филма в базата данни
         this.movieService.createMovie(movieData).subscribe(
           (createdMovie) => {
             if (createdMovie && createdMovie._id) {
-              // Задаване на ID на създадения филм
               this.movie._id = createdMovie._id;
             }
           },
@@ -133,7 +128,7 @@ export class MovieDetailsComponent implements OnInit {
       },
       (error) => {
         console.error('Error fetching TMDb movie details:', error);
-        // Задаване на стойности, ако заявката е неуспешна
+
         this.movie = {
           title: 'Unknown Title',
           desc: 'No description available',
@@ -159,7 +154,7 @@ export class MovieDetailsComponent implements OnInit {
             (rating: any) =>
               rating.userId === userId || rating.guestId === guestId
           );
-          this.userRating = userRating ? userRating.rating : 0; // Задаваме локалния рейтинг
+          this.userRating = userRating ? userRating.rating : 0;
         }
       },
       (error) => {
@@ -191,10 +186,9 @@ export class MovieDetailsComponent implements OnInit {
       return;
     }
 
-    // Използване на правилния идентификатор
     const movieId = this.isTMDbMovie(this.movie)
-      ? `tmdb-${this.movie.id}` // За TMDb филми
-      : this.movie._id; // За локални филми
+      ? `tmdb-${this.movie.id}`
+      : this.movie._id;
 
     if (!movieId) {
       console.error('Cannot rate movie: movie ID is undefined.');

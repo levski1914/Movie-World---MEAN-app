@@ -18,7 +18,7 @@ const MovieSchema = new mongoose.Schema({
   image: { type: String, required: true },
   rating: { type: Number, default: 0 },
   ratings: [RatingSchema],
-  tmdbId: { type: String, unique: true }, // Уникален индекс за TMDb ID
+  tmdbId: { type: String, unique: true },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

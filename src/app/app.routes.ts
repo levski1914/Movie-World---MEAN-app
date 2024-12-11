@@ -27,7 +27,11 @@ export const appRoutes: Routes = [
     canActivate: [AuthGuard],
   },
   { path: 'create', component: CreateMovieComponent, canActivate: [AuthGuard] },
-  { path: 'edit/:id', component: EditMovieComponent, canActivate: [AuthGuard] },
+  {
+    path: 'edit-movie/:id',
+    component: EditMovieComponent,
+    canActivate: [AuthGuard],
+  },
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', redirectTo: '/home' },
 ];

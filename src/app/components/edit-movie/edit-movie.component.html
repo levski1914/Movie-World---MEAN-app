@@ -1,1 +1,56 @@
-<p>edit-movie works!</p>
+<div class="edit-movie-container">
+  <h1>Edit Movie</h1>
+  <form (ngSubmit)="onSubmit()">
+    <div>
+      <label for="title">Title</label>
+      <input
+        id="title"
+        [(ngModel)]="movie.title"
+        name="title"
+        type="text"
+        required
+      />
+    </div>
+    <div>
+      <label for="desc">Description</label>
+      <textarea
+        id="desc"
+        [(ngModel)]="movie.desc"
+        name="desc"
+        required
+      ></textarea>
+    </div>
+    <div>
+      <label for="genre">Genre</label>
+      <input
+        id="genre"
+        [(ngModel)]="movie.genre"
+        name="genre"
+        type="text"
+        required
+      />
+    </div>
+    <div>
+      <label for="releaseDate">Release Date</label>
+      <input
+        id="releaseDate"
+        class="date-input"
+        [(ngModel)]="movie.releaseDate"
+        name="releaseDate"
+        type="date"
+        required
+      />
+    </div>
+    <div>
+      <label for="image">Image URL</label>
+      <input
+        id="image"
+        [(ngModel)]="movie.image"
+        name="image"
+        type="url"
+        required
+      />
+    </div>
+    <button type="submit">Update Movie</button>
+  </form>
+</div>

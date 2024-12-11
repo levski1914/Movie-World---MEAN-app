@@ -13,7 +13,7 @@ import { MovieService } from '../../services/movie.service';
 })
 export class HomeComponent implements OnInit {
   trendingMovies: any[] = [];
-  selectedGenre: string = 'Action'; // По подразбиране първи жанр
+  selectedGenre: string = 'Action';
   movies: any[] = [];
   genres = [
     { id: '2', genre: 'Action' },
@@ -27,8 +27,8 @@ export class HomeComponent implements OnInit {
   constructor(private movieService: MovieService) {}
 
   ngOnInit(): void {
-    this.loadTrendingMovies(); // Зарежда само горната секция с трендинг филми
-    this.loadMovies(this.selectedGenre); // Зарежда филми по жанр
+    this.loadTrendingMovies();
+    this.loadMovies(this.selectedGenre);
   }
 
   loadMovies(genre: string): void {
@@ -36,7 +36,6 @@ export class HomeComponent implements OnInit {
 
     this.movieService.getMoviesByGenre(genre).subscribe(
       (movies) => {
-        // Проверява дали `movies` съдържа правилния жанр
         this.movies = movies.filter((movie) =>
           movie.genre?.toLowerCase().includes(genre.toLowerCase())
         );
@@ -50,7 +49,6 @@ export class HomeComponent implements OnInit {
   loadTrendingMovies(): void {
     this.movieService.getTrendingMovies().subscribe(
       (data) => {
-        // Само горната секция (първите два трендинг филма)
         this.trendingMovies = data.results.slice(0, 2);
       },
       (err) => console.log('Error fetching trending movies: ', err)
